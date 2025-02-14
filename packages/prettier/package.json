@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "prettier": "^3.5.0"
+  },
+  "exports": {
+    "./prettier.config": "./index.mjs"
+  }
 }
