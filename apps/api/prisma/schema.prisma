@@ -1,0 +1,248 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Feature {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+
+  permissions Permission[]
+  companies   Company[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id String @id @default(uuid())
+
+  name String @unique
+  code String @unique
+
+  featureId String
+  feature   Feature @relation(fields: [featureId], references: [id])
+
+  roles Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  users User[]
+
+  permissions Permission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id String @id @default(uuid())
+
+  address String
+  city    String
+  state   String
+  country String
+  zipCode String
+
+  companies Company[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+
+  users    User[]
+  features Feature[]
+
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id String @id @default(uuid())
+
+  email    String  @unique
+  name     String
+  password String
+  document String? @unique
+  phone    String?
+  active   Boolean @default(true)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CostCenterGroup {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+  order       Int     @default(autoincrement())
+
+  costCenter CostCenter[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CostCenter {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+  order       Int     @default(autoincrement())
+
+  beneficiaries Beneficiary[]
+  inflows       Inflow[]
+
+  group   CostCenterGroup? @relation(fields: [groupId], references: [id])
+  groupId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CategoryGroup {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+  order       Int     @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+  order       Int     @default(autoincrement())
+  flowClass   String?
+  dreClass    String?
+  type        String?
+  deductible  Boolean @default(false)
+
+  categories Beneficiary[]
+  inflows    Inflow[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Beneficiary {
+  id String @id @default(uuid())
+
+  name         String
+  description  String?
+  document     String?   @unique
+  documentType String?
+  type         String?
+  email        String?   @unique
+  birthDate    DateTime?
+  phone        String?
+  cellphone    String?
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  costCenter   CostCenter? @relation(fields: [costCenterId], references: [id])
+  costCenterId String?
+
+  inflows Inflow[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FinancialAccount {
+  id String @id @default(uuid())
+
+  name           String
+  description    String?
+  bank           String?
+  agency         String?
+  number         String?
+  initialBalance Float   @default(0)
+  initialCredit  Float   @default(0)
+  creditLimit    Float   @default(0)
+  deductible     Boolean @default(false)
+  wallet         String?
+  variation      String?
+  agreement      String?
+  emissionCost   Float   @default(0)
+  emissionTax    Float   @default(0)
+  monthlyCost    Float   @default(0)
+
+  inflows Inflow[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum InflowType {
+  PAYMENT
+  RECEIPT
+  TRANSFER
+}
+
+model Inflow {
+  id String @id @default(uuid())
+
+  type         InflowType
+  name         String
+  description  String?
+  value        Float
+  compensation String?
+  dueDate      DateTime?
+  received     Boolean    @default(false)
+
+  financialAccount   FinancialAccount? @relation(fields: [financialAccountId], references: [id])
+  financialAccountId String?
+
+  costCenter   CostCenter? @relation(fields: [costCenterId], references: [id])
+  costCenterId String?
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id])
+  beneficiaryId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

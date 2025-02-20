@@ -1,0 +1,693 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Email of the user"""
+  email: String!
+
+  """Name of the user"""
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Auth {
+  """User logged in"""
+  user: User!
+
+  """Session access token"""
+  accessToken: String!
+}
+
+type CostCenterGroup {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the cost center"""
+  name: String!
+
+  """Description of the cost center group"""
+  description: String
+
+  """Sequence number of the cost center"""
+  order: Float!
+
+  """Cost centers on the group"""
+  costCenters: [CostCenter!]
+}
+
+type CostCenter {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the cost center"""
+  name: String!
+
+  """Description of the cost center"""
+  description: String
+
+  """Sequence number of the cost center"""
+  order: Float!
+
+  """Group of the cost center"""
+  group: CostCenterGroup!
+}
+
+type Category {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the category"""
+  name: String!
+
+  """Description of the category"""
+  description: String
+
+  """Sequence number of the category"""
+  order: Float!
+
+  """Description of the category"""
+  flowClass: String
+
+  """Description of the category"""
+  dreClass: String
+
+  """Description of the category"""
+  type: String
+
+  """Description of the category"""
+  deductible: Boolean!
+}
+
+type CategoryGroup {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the category"""
+  name: String!
+
+  """Description of the category"""
+  description: String!
+
+  """Sequence number of the category"""
+  order: Float!
+
+  """Categories on the group"""
+  categories: [Category!]
+}
+
+type Beneficiary {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the beneficiary"""
+  name: String!
+
+  """Description of the beneficiary"""
+  description: String
+
+  """Document of the beneficiary"""
+  document: String
+
+  """Document type of the beneficiary"""
+  documentType: String
+
+  """Type of the beneficiary"""
+  type: String
+
+  """Email of the beneficiary"""
+  email: String
+
+  """Birthdate of the beneficiary"""
+  birthDate: String
+
+  """Phone of the beneficiary"""
+  phone: String
+
+  """Cellphone of the beneficiary"""
+  cellphone: String
+
+  """Category of the beneficiary"""
+  category: [Category!]
+
+  """Cost center of the beneficiary"""
+  costCenter: [CostCenter!]
+}
+
+type FinancialAccount {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the financial account"""
+  name: String!
+
+  """Description of the financial account"""
+  description: String
+
+  """Bank of the financial account"""
+  bank: String
+
+  """Agency number of the financial account"""
+  agency: String
+
+  """Account number"""
+  number: String
+
+  """Initial balance of the account"""
+  initialBalance: Float!
+
+  """Initial credit amount"""
+  initialCredit: Float!
+
+  """Credit limit of the account"""
+  creditLimit: Float!
+
+  """Whether the account is deductible"""
+  deductible: Boolean!
+
+  """Wallet information"""
+  wallet: String
+
+  """Variation information"""
+  variation: String
+
+  """Agreement information"""
+  agreement: String
+
+  """Emission cost"""
+  emissionCost: Float!
+
+  """Emission tax"""
+  emissionTax: Float!
+
+  """Monthly cost"""
+  monthlyCost: Float!
+}
+
+type Inflow {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Type of the inflow"""
+  type: InflowType!
+
+  """Name of the inflow"""
+  name: String!
+
+  """Description of the inflow"""
+  description: String
+
+  """Value of the inflow"""
+  value: Float!
+
+  """Compensation information"""
+  compensation: String
+
+  """Due date of the inflow"""
+  dueDate: DateTime
+
+  """Whether the inflow has been received"""
+  received: Boolean!
+
+  """Financial account associated with the inflow"""
+  financialAccount: FinancialAccount
+
+  """Cost center associated with the inflow"""
+  costCenter: CostCenter
+
+  """Category of the inflow"""
+  category: Category
+
+  """Beneficiary associated with the inflow"""
+  beneficiary: Beneficiary
+}
+
+enum InflowType {
+  PAYMENT
+  RECEIPT
+  TRANSFER
+}
+
+type Query {
+  getAllUsers: [User!]!
+  getUserById(id: String!): User!
+  getCurrentUser: User!
+  getUserByEmail(email: String!): User!
+  getAllCostCenters: [CostCenter!]!
+  getCostCenterById(id: String!): CostCenter!
+  getAllCostCentersGroups: [CostCenterGroup!]!
+  getCostCenterGroupById(id: String!): CostCenterGroup!
+  getAllCategories: [Category!]!
+  getCategoryById(id: String!): Category!
+  getAllCategoriesGroups: [CategoryGroup!]!
+  getCategoryGroupById(id: String!): CategoryGroup!
+  getAllBeneficiaries: [Beneficiary!]!
+  getBeneficiaryById(id: String!): Beneficiary!
+  getAllFinancialAccounts: [FinancialAccount!]!
+  getFinancialAccountById(id: String!): FinancialAccount!
+  getAllInflows: [Inflow!]!
+  getInflowById(id: String!): Inflow!
+}
+
+type Mutation {
+  signIn(email: String!, password: String!): Auth!
+  createUser(data: CreateUserInput!): User!
+  updateUser(data: CreateUserInput!): User!
+  deleteUser(id: String!): User!
+  createCostCenter(data: CreateCostCenterInput!): CostCenter!
+  updateCostCenter(data: UpdateCostCenterInput!): CostCenter!
+  deleteCostCenter(id: String!): CostCenter!
+  createCostCenterGroup(data: CreateCostCenterGroupInput!): CostCenterGroup!
+  updateCostCenterGroup(data: UpdateCostCenterGroupInput!): CostCenterGroup!
+  deleteCostCenterGroup(id: String!): CostCenterGroup!
+  createCategory(data: CreateCategoryInput!): Category!
+  updateCategory(data: UpdateCategoryInput!): Category!
+  deleteCategory(id: String!): Category!
+  createCategoryGroup(data: CreateCategoryGroupInput!): CategoryGroup!
+  updateCategoryGroup(data: UpdateCategoryGroupInput!): CategoryGroup!
+  deleteCategoryGroup(id: String!): CategoryGroup!
+  createBeneficiary(data: CreateBeneficiaryInput!): Beneficiary!
+  updateBeneficiary(data: UpdateBeneficiaryInput!): Beneficiary!
+  deleteBeneficiary(id: String!): Beneficiary!
+  createFinancialAccount(data: CreateFinancialAccountInput!): FinancialAccount!
+  updateFinancialAccount(data: UpdateFinancialAccountInput!): FinancialAccount!
+  deleteFinancialAccount(id: String!): FinancialAccount!
+  createInflow(data: CreateInflowInput!): Inflow!
+  updateInflow(data: UpdateInflowInput!): Inflow!
+  deleteInflow(id: String!): Inflow!
+}
+
+input CreateUserInput {
+  """Email of the user"""
+  email: String!
+
+  """Name of the user"""
+  name: String!
+
+  """Password of the user"""
+  password: String!
+}
+
+input CreateCostCenterInput {
+  """Name of the cost center"""
+  name: String!
+
+  """Description of the cost center"""
+  description: String
+
+  """ID of the cost center group"""
+  groupId: ID!
+}
+
+input UpdateCostCenterInput {
+  """Name of the cost center"""
+  name: String
+
+  """Description of the cost center"""
+  description: String
+
+  """ID of the cost center group"""
+  groupId: ID
+
+  """ID of the cost center"""
+  id: ID!
+}
+
+input CreateCostCenterGroupInput {
+  """Name of the cost center"""
+  name: String!
+
+  """Description of the cost center group"""
+  description: String
+}
+
+input UpdateCostCenterGroupInput {
+  """Name of the cost center"""
+  name: String
+
+  """Description of the cost center group"""
+  description: String
+
+  """ID of the cost center group"""
+  id: ID!
+}
+
+input CreateCategoryInput {
+  """Name of the category"""
+  name: String!
+
+  """Description of the category"""
+  description: String
+
+  """Description of the category"""
+  flowClass: String
+
+  """Description of the category"""
+  dreClass: String
+
+  """Description of the category"""
+  type: String
+
+  """Description of the category"""
+  deductible: Boolean!
+}
+
+input UpdateCategoryInput {
+  """Name of the category"""
+  name: String
+
+  """Description of the category"""
+  description: String
+
+  """Description of the category"""
+  flowClass: String
+
+  """Description of the category"""
+  dreClass: String
+
+  """Description of the category"""
+  type: String
+
+  """Description of the category"""
+  deductible: Boolean
+
+  """ID of the category"""
+  id: ID!
+}
+
+input CreateCategoryGroupInput {
+  """Name of the category"""
+  name: String!
+
+  """Description of the category"""
+  description: String
+}
+
+input UpdateCategoryGroupInput {
+  """Name of the category"""
+  name: String
+
+  """Description of the category"""
+  description: String
+
+  """ID of the category group"""
+  id: ID!
+}
+
+input CreateBeneficiaryInput {
+  """Name of the beneficiary"""
+  name: String!
+
+  """Description of the beneficiary"""
+  description: String
+
+  """Document of the beneficiary"""
+  document: String
+
+  """Document type of the beneficiary"""
+  documentType: String
+
+  """Type of the beneficiary"""
+  type: String
+
+  """Email of the beneficiary"""
+  email: String
+
+  """Birthdate of the beneficiary"""
+  birthDate: String
+
+  """Phone of the beneficiary"""
+  phone: String
+
+  """Cellphone of the beneficiary"""
+  cellphone: String
+
+  """Category of the beneficiary"""
+  categoryId: ID
+
+  """Cost center of the beneficiary"""
+  costCenterId: ID
+}
+
+input UpdateBeneficiaryInput {
+  """Name of the beneficiary"""
+  name: String
+
+  """Description of the beneficiary"""
+  description: String
+
+  """Document of the beneficiary"""
+  document: String
+
+  """Document type of the beneficiary"""
+  documentType: String
+
+  """Type of the beneficiary"""
+  type: String
+
+  """Email of the beneficiary"""
+  email: String
+
+  """Birthdate of the beneficiary"""
+  birthDate: String
+
+  """Phone of the beneficiary"""
+  phone: String
+
+  """Cellphone of the beneficiary"""
+  cellphone: String
+
+  """Category of the beneficiary"""
+  categoryId: ID
+
+  """Cost center of the beneficiary"""
+  costCenterId: ID
+
+  """ID of the beneficiary"""
+  id: String!
+}
+
+input CreateFinancialAccountInput {
+  """Name of the financial account"""
+  name: String!
+
+  """Description of the financial account"""
+  description: String
+
+  """Bank of the financial account"""
+  bank: String
+
+  """Agency number of the financial account"""
+  agency: String
+
+  """Account number"""
+  number: String
+
+  """Initial balance of the account"""
+  initialBalance: Float! = 0
+
+  """Initial credit amount"""
+  initialCredit: Float! = 0
+
+  """Credit limit of the account"""
+  creditLimit: Float! = 0
+
+  """Whether the account is deductible"""
+  deductible: Boolean! = false
+
+  """Wallet information"""
+  wallet: String
+
+  """Variation information"""
+  variation: String
+
+  """Agreement information"""
+  agreement: String
+
+  """Emission cost"""
+  emissionCost: Float! = 0
+
+  """Emission tax"""
+  emissionTax: Float! = 0
+
+  """Monthly cost"""
+  monthlyCost: Float! = 0
+}
+
+input UpdateFinancialAccountInput {
+  """Name of the financial account"""
+  name: String
+
+  """Description of the financial account"""
+  description: String
+
+  """Bank of the financial account"""
+  bank: String
+
+  """Agency number of the financial account"""
+  agency: String
+
+  """Account number"""
+  number: String
+
+  """Initial balance of the account"""
+  initialBalance: Float = 0
+
+  """Initial credit amount"""
+  initialCredit: Float = 0
+
+  """Credit limit of the account"""
+  creditLimit: Float = 0
+
+  """Whether the account is deductible"""
+  deductible: Boolean = false
+
+  """Wallet information"""
+  wallet: String
+
+  """Variation information"""
+  variation: String
+
+  """Agreement information"""
+  agreement: String
+
+  """Emission cost"""
+  emissionCost: Float = 0
+
+  """Emission tax"""
+  emissionTax: Float = 0
+
+  """Monthly cost"""
+  monthlyCost: Float = 0
+
+  """ID of the financial account"""
+  id: String!
+}
+
+input CreateInflowInput {
+  """Type of the inflow"""
+  type: InflowType!
+
+  """Name of the inflow"""
+  name: String!
+
+  """Description of the inflow"""
+  description: String
+
+  """Value of the inflow"""
+  value: Float!
+
+  """Compensation information"""
+  compensation: String
+
+  """Due date of the inflow"""
+  dueDate: DateTime
+
+  """Whether the inflow has been received"""
+  received: Boolean! = false
+
+  """Financial account associated with the inflow"""
+  financialAccountId: ID
+
+  """Cost center associated with the inflow"""
+  costCenterId: ID
+
+  """Category of the inflow"""
+  categoryId: ID
+
+  """Beneficiary associated with the inflow"""
+  beneficiaryId: ID
+}
+
+input UpdateInflowInput {
+  """Type of the inflow"""
+  type: InflowType
+
+  """Name of the inflow"""
+  name: String
+
+  """Description of the inflow"""
+  description: String
+
+  """Value of the inflow"""
+  value: Float
+
+  """Compensation information"""
+  compensation: String
+
+  """Due date of the inflow"""
+  dueDate: DateTime
+
+  """Whether the inflow has been received"""
+  received: Boolean = false
+
+  """Financial account associated with the inflow"""
+  financialAccountId: ID
+
+  """Cost center associated with the inflow"""
+  costCenterId: ID
+
+  """Category of the inflow"""
+  categoryId: ID
+
+  """Beneficiary associated with the inflow"""
+  beneficiaryId: ID
+
+  """ID of the inflow"""
+  id: String!
+}

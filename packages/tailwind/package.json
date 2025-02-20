@@ -1,0 +1,18 @@
+{
+  "name": "@contecon/tailwind",
+  "version": "0.0.0",
+  "private": "true",
+  "license": "MIT",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.0.7",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^4.0.7"
+  },
+  "exports": {
+    "./styles": "./src/globals.css",
+    "./postcss": "./src/postcss.config.mjs"
+  },
+  "devDependencies": {
+    "tailwindcss-animate": "^1.0.7"
+  }
+}
