@@ -1,30 +1,35 @@
 'use client'
 
-import { AlertModal } from '@/components/modals/alert-modal'
-import { CreateCostCenter } from '@/components/modals/create-cost-center'
 import { usePage } from '@/components/templates/page'
-import { PageHeader } from '@/components/templates/page/header'
-import { Button } from '@/components/ui/button'
-import { DataTable } from '@/components/ui/data-table'
+import { HeaderActions, PageHeader } from '@/components/ui/page-header'
 import { DELETE_COST_CENTER } from '@/shared/api/mutations/delete-cost-center'
-import { GET_ALL_COSTS_CENTERS } from '@/shared/api/queries/get-all-cost-centers'
-import { CostCenter } from '@/shared/graphql/graphql'
-import { useSearchParams } from '@/shared/hooks/use-search-params'
 import { useMutation, useQuery } from '@apollo/client'
-import { ColumnDef } from '@tanstack/react-table'
-import { Pencil, Plus, Trash, Trash2 } from 'lucide-react'
-import { useEffect } from 'react'
+import { Group, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { CreateCostCenterGroup } from './components/create-cost-center-group'
+import { GET_ALL_COSTS_CENTERS_GROUPS } from '@/shared/api/queries/get-all-cost-centers-groups'
+import { CreateCostCenter } from './components/create-cost-center'
+import { TableWithGroups, TableGroup } from '@/components/ui/table-with-group'
 
 export default function CostCenters() {
-    const { setBreadcrumbs, setTitle, setSubtitle, setActions } = usePage()
-    const { set } = useSearchParams()
+    const { setBreadcrumbs } = usePage()
+
+    useEffect(() => {
+        setBreadcrumbs([
+            { label: 'Home', path: '/' },
+            { label: 'Centro de Custos', path: '/cost-centers' },
+        ])
+    }, [setBreadcrumbs])
 
     const {
-        data: costCenters,
+        data: costCenter,
         loading,
         refetch,
-    } = useQuery(GET_ALL_COSTS_CENTERS)
+    } = useQuery(GET_ALL_COSTS_CENTERS_GROUPS)
+
+    const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     const [deleteCostCenter] = useMutation(DELETE_COST_CENTER)
 
@@ -40,82 +45,51 @@ export default function CostCenters() {
             })
     }
 
-    const columns: ColumnDef<CostCenter>[] = [
+    const costCentersData: TableGroup[] =
+        costCenter?.getAllCostCentersGroups?.map((group) => ({
+            id: group.id,
+            name: group.name,
+            description: group.description || '',
+            childrens:
+                group.costCenter?.map((costCenter) => ({
+                    id: costCenter.id,
+                    name: costCenter.name,
+                    description: costCenter.description || '',
+                })) || [],
+        })) || []
+
+    const headerActions: HeaderActions[] = [
         {
-            header: 'Sequência',
-            accessorKey: 'sequence',
-            cell: ({ row }) => (
-                <div className='flex items-center gap-2'>
-                    <span className='text-foreground font-semibold'>
-                        {row.original.order}.
-                    </span>
-                    <span>{row.original.name}</span>
-                </div>
-            ),
+            title: 'novo centro de custos',
+            icon: <Plus className='size-6' />,
+            type: 'default',
+            onClick: () => setIsCreateModalOpen(true),
         },
         {
-            header: 'Descrição',
-            accessorKey: 'description',
-        },
-        {
-            header: '',
-            accessorKey: 'id',
-            cell: ({ row }) => (
-                <div className='flex items-center justify-end gap-2'>
-                    <AlertModal
-                        title='Deletar centro de custos'
-                        description='Tem certeza que deseja deletar este centro de custos?'
-                        confirmAction={() => handleDelete(row.original.id)}
-                    >
-                        <Button size='icon' variant='destructive'>
-                            <Trash2 className='size-4' />
-                        </Button>
-                    </AlertModal>
-                    <Button size='icon' variant='secondary'>
-                        <Pencil className='size-4' />
-                    </Button>
-                </div>
-            ),
+            icon: <Group className='size-6' />,
+            type: 'icon',
+            onClick: () => setIsCreateGroupModalOpen(true),
         },
     ]
 
-    useEffect(() => {
-        setBreadcrumbs([
-            { label: 'Home', path: '/' },
-            { label: 'Centros de custos', path: '/app/cost-centers' },
-        ])
-        setTitle('Centros de custos')
-        setSubtitle('Gerencie seus centros de custo')
-        setActions({
-            title: 'novo centro de custos',
-            onClick: () => set('?', 'add'),
-            icon: <Plus size={12} />,
-        })
-    }, [])
-
-    useEffect(() => {
-        setBreadcrumbs([
-            { label: 'Home', path: '/' },
-            { label: 'Centros de custos', path: '/app/cost-centers' },
-        ])
-        setTitle('Centros de custos')
-        setSubtitle('Gerencie seus centros de custo')
-        setActions({
-            title: 'novo centro de custos',
-            onClick: () => set('?', 'create'),
-            icon: <Plus size={12} />,
-        })
-    }, [])
-
     return (
         <div className='flex flex-col gap-4 w-full h-full'>
-            <PageHeader />
-            <DataTable
-                columns={columns}
-                data={costCenters?.getAllCostCenters || []}
-                isLoading={loading}
+            <PageHeader
+                title='Centro de Custos'
+                subtitle='Gerencie todos os centro de custos criados'
+                actions={headerActions}
             />
-            <CreateCostCenter />
+            <TableWithGroups data={costCentersData} />
+            <CreateCostCenter
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                refecth={refetch}
+            />
+            <CreateCostCenterGroup
+                isOpen={isCreateGroupModalOpen}
+                onClose={() => setIsCreateGroupModalOpen(false)}
+                refecth={refetch}
+            />
         </div>
     )
 }

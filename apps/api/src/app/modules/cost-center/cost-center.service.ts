@@ -11,6 +11,9 @@ export class CostCenterService {
 
     async getAll() {
         return this.prisma.costCenter.findMany({
+            orderBy: {
+                createdAt: 'asc',
+            },
             include: {
                 group: true,
             },
@@ -65,8 +68,9 @@ export class CostCenterService {
 
     async getAllGroups() {
         return this.prisma.costCenterGroup.findMany({
-            take: 4,
-            skip: 3,
+            orderBy: {
+                createdAt: 'asc',
+            },
             include: {
                 costCenter: true,
             },

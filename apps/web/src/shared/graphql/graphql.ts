@@ -73,8 +73,6 @@ export type Category = {
   id: Scalars['ID']['output'];
   /** Name of the category */
   name: Scalars['String']['output'];
-  /** Sequence number of the category */
-  order: Scalars['Float']['output'];
   /** Description of the category */
   type?: Maybe<Scalars['String']['output']>;
   /** Date of last update */
@@ -93,8 +91,6 @@ export type CategoryGroup = {
   id: Scalars['ID']['output'];
   /** Name of the category */
   name: Scalars['String']['output'];
-  /** Sequence number of the category */
-  order: Scalars['Float']['output'];
   /** Date of last update */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -109,8 +105,6 @@ export type CostCenter = {
   id: Scalars['ID']['output'];
   /** Name of the cost center */
   name: Scalars['String']['output'];
-  /** Sequence number of the cost center */
-  order: Scalars['Float']['output'];
   /** Date of last update */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -118,7 +112,7 @@ export type CostCenter = {
 export type CostCenterGroup = {
   __typename?: 'CostCenterGroup';
   /** Cost centers on the group */
-  costCenters?: Maybe<Array<CostCenter>>;
+  costCenter?: Maybe<Array<CostCenter>>;
   /** Date of creation */
   createdAt: Scalars['DateTime']['output'];
   /** Description of the cost center group */
@@ -127,8 +121,6 @@ export type CostCenterGroup = {
   id: Scalars['ID']['output'];
   /** Name of the cost center */
   name: Scalars['String']['output'];
-  /** Sequence number of the cost center */
-  order: Scalars['Float']['output'];
   /** Date of last update */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -175,6 +167,8 @@ export type CreateCategoryInput = {
   /** Description of the category */
   flowClass?: InputMaybe<Scalars['String']['input']>;
   /** Name of the category */
+  groupId: Scalars['ID']['input'];
+  /** Name of the category */
   name: Scalars['String']['input'];
   /** Description of the category */
   type?: InputMaybe<Scalars['String']['input']>;
@@ -190,6 +184,8 @@ export type CreateCostCenterGroupInput = {
 export type CreateCostCenterInput = {
   /** Description of the cost center */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** ID of the cost center group */
+  groupId: Scalars['ID']['input'];
   /** Name of the cost center */
   name: Scalars['String']['input'];
 };
@@ -606,6 +602,8 @@ export type UpdateCategoryInput = {
   dreClass?: InputMaybe<Scalars['String']['input']>;
   /** Description of the category */
   flowClass?: InputMaybe<Scalars['String']['input']>;
+  /** Name of the category */
+  groupId?: InputMaybe<Scalars['ID']['input']>;
   /** ID of the category */
   id: Scalars['ID']['input'];
   /** Name of the category */
@@ -626,6 +624,8 @@ export type UpdateCostCenterGroupInput = {
 export type UpdateCostCenterInput = {
   /** Description of the cost center */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** ID of the cost center group */
+  groupId?: InputMaybe<Scalars['ID']['input']>;
   /** ID of the cost center */
   id: Scalars['ID']['input'];
   /** Name of the cost center */

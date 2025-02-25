@@ -1,81 +1,95 @@
 'use client'
 
-import { CreateCategory } from '@/components/modals/create-category'
-import { CreateCostCenter } from '@/components/modals/create-cost-center'
 import { usePage } from '@/components/templates/page'
-import { PageHeader } from '@/components/templates/page/header'
-import { DataTable } from '@/components/ui/data-table'
-import { GET_ALL_CATEGORIES } from '@/shared/api/queries/get-all-categories'
-import { GET_ALL_COSTS_CENTERS_GROUPS } from '@/shared/api/queries/get-all-cost-centers-groups'
-import { Category, CostCenterGroup } from '@/shared/graphql/graphql'
-import { useSearchParams } from '@/shared/hooks/use-search-params'
-import { useQuery } from '@apollo/client'
-import { ColumnDef } from '@tanstack/react-table'
-import { Plus } from 'lucide-react'
-import { useEffect } from 'react'
+import { HeaderActions, PageHeader } from '@/components/ui/page-header'
+import { DELETE_COST_CENTER } from '@/shared/api/mutations/delete-cost-center'
+import { useMutation, useQuery } from '@apollo/client'
+import { Group, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { CreateCategoryGroup } from './components/create-category-group'
+import { GET_ALL_CATEGORIES_GROUPS } from '@/shared/api/queries/get-all-categories-groups'
+import { CreateCategory } from './components/create-category'
+import { TableWithGroups, TableGroup } from '@/components/ui/table-with-group'
 
 export default function Categories() {
-    const { setBreadcrumbs, setTitle, setSubtitle, setActions } = usePage()
-    const { set } = useSearchParams()
+    const { setBreadcrumbs } = usePage()
 
-    const { data: categories, loading, refetch } = useQuery(GET_ALL_CATEGORIES)
+    useEffect(() => {
+        setBreadcrumbs([
+            { label: 'Home', path: '/' },
+            { label: 'Categorias', path: '/cost-centers' },
+        ])
+    }, [setBreadcrumbs])
 
-    const columns: ColumnDef<Category>[] = [
+    const {
+        data: categories,
+        loading,
+        refetch,
+    } = useQuery(GET_ALL_CATEGORIES_GROUPS)
+
+    const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+
+    const [deleteCostCenter] = useMutation(DELETE_COST_CENTER)
+
+    const handleDelete = async (id: string) => {
+        await deleteCostCenter({ variables: { id } })
+            .then(() => {
+                refetch()
+                toast.success('Centro de custos deletado com sucesso!')
+            })
+            .catch((error) => {
+                console.log(error.message)
+                toast.error('Erro ao deletar centro de custos!')
+            })
+    }
+
+    const costCentersData: TableGroup[] =
+        categories?.getAllCategoriesGroups?.map((group) => ({
+            id: group.id,
+            name: group.name,
+            description: group.description || '',
+            childrens:
+                group.categories?.map((costCenter) => ({
+                    id: costCenter.id,
+                    name: costCenter.name,
+                    description: costCenter.description || '',
+                })) || [],
+        })) || []
+
+    const headerActions: HeaderActions[] = [
         {
-            header: 'Sequência',
-            accessorKey: 'sequence',
-            cell: ({ row }) => (
-                <div className='flex items-center gap-2'>
-                    <span className='text-foreground font-semibold'>
-                        {row.original.order}.
-                    </span>
-                    <span>{row.original.name}</span>
-                </div>
-            ),
+            title: 'nova categoria',
+            icon: <Plus className='size-6' />,
+            type: 'default',
+            onClick: () => setIsCreateModalOpen(true),
         },
         {
-            header: 'Descrição',
-            accessorKey: 'description',
+            icon: <Group className='size-6' />,
+            type: 'icon',
+            onClick: () => setIsCreateGroupModalOpen(true),
         },
     ]
 
-    useEffect(() => {
-        setBreadcrumbs([
-            { label: 'Home', path: '/' },
-            { label: 'Categorias', path: '/categorias' },
-        ])
-        setTitle('Centros de custos')
-        setSubtitle('Gerencie seus centros de custo')
-        setActions({
-            title: 'nova categoria',
-            onClick: () => set('?', 'add'),
-            icon: <Plus size={12} />,
-        })
-    }, [])
-
-    useEffect(() => {
-        setBreadcrumbs([
-            { label: 'Home', path: '/' },
-            { label: 'Centros de custos', path: '/categorias' },
-        ])
-        setTitle('Categorias')
-        setSubtitle('Gerencie suas categorias')
-        setActions({
-            title: 'novo centro de custos',
-            onClick: () => set('?', 'create'),
-            icon: <Plus size={12} />,
-        })
-    }, [])
-
     return (
         <div className='flex flex-col gap-4 w-full h-full'>
-            <PageHeader />
-            <DataTable
-                columns={columns}
-                data={categories?.getAllCategories || []}
-                isLoading={loading}
+            <PageHeader
+                title='Categorias'
+                subtitle='Gerencie todas as categorias'
+                actions={headerActions}
             />
-            <CreateCategory />
+            <TableWithGroups data={costCentersData} />
+            <CreateCategory
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                refecth={refetch}
+            />
+            <CreateCategoryGroup
+                isOpen={isCreateGroupModalOpen}
+                onClose={() => setIsCreateGroupModalOpen(false)}
+                refecth={refetch}
+            />
         </div>
     )
 }

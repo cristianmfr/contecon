@@ -9,7 +9,6 @@ export const GET_ALL_COSTS_CENTERS: TypedDocumentNode<{
             id
             name
             description
-            order
         }
     }
 `
