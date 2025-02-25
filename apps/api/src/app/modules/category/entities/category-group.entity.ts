@@ -10,9 +10,6 @@ export class CategoryGroup extends BaseEntity {
     @Field(() => String, { description: 'Description of the category' })
     description: string
 
-    @Field(() => Number, { description: 'Sequence number of the category' })
-    order: number
-
     @Field(() => [Category], {
         description: 'Categories on the group',
         nullable: true,

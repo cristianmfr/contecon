@@ -12,9 +12,6 @@ export class Category extends BaseEntity {
     })
     description?: string
 
-    @Field(() => Number, { description: 'Sequence number of the category' })
-    order: number
-
     @Field(() => String, {
         description: 'Description of the category',
         nullable: true,

@@ -32,6 +32,23 @@ type Auth {
   accessToken: String!
 }
 
+type CostCenter {
+  """Unique identifier"""
+  id: ID!
+
+  """Date of creation"""
+  createdAt: DateTime!
+
+  """Date of last update"""
+  updatedAt: DateTime!
+
+  """Name of the cost center"""
+  name: String!
+
+  """Description of the cost center"""
+  description: String
+}
+
 type CostCenterGroup {
   """Unique identifier"""
   id: ID!
@@ -48,34 +65,8 @@ type CostCenterGroup {
   """Description of the cost center group"""
   description: String
 
-  """Sequence number of the cost center"""
-  order: Float!
-
   """Cost centers on the group"""
-  costCenters: [CostCenter!]
-}
-
-type CostCenter {
-  """Unique identifier"""
-  id: ID!
-
-  """Date of creation"""
-  createdAt: DateTime!
-
-  """Date of last update"""
-  updatedAt: DateTime!
-
-  """Name of the cost center"""
-  name: String!
-
-  """Description of the cost center"""
-  description: String
-
-  """Sequence number of the cost center"""
-  order: Float!
-
-  """Group of the cost center"""
-  group: CostCenterGroup!
+  costCenter: [CostCenter!]
 }
 
 type Category {
@@ -93,9 +84,6 @@ type Category {
 
   """Description of the category"""
   description: String
-
-  """Sequence number of the category"""
-  order: Float!
 
   """Description of the category"""
   flowClass: String
@@ -125,9 +113,6 @@ type CategoryGroup {
 
   """Description of the category"""
   description: String!
-
-  """Sequence number of the category"""
-  order: Float!
 
   """Categories on the group"""
   categories: [Category!]
@@ -405,6 +390,9 @@ input CreateCategoryInput {
 
   """Description of the category"""
   deductible: Boolean!
+
+  """Name of the category"""
+  groupId: ID!
 }
 
 input UpdateCategoryInput {
@@ -425,6 +413,9 @@ input UpdateCategoryInput {
 
   """Description of the category"""
   deductible: Boolean
+
+  """Name of the category"""
+  groupId: ID
 
   """ID of the category"""
   id: ID!

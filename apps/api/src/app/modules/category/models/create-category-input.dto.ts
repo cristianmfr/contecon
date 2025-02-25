@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql'
+import { Field, ID, InputType } from '@nestjs/graphql'
 
 @InputType()
 export class CreateCategoryInput {
@@ -32,6 +32,6 @@ export class CreateCategoryInput {
     @Field(() => Boolean, { description: 'Description of the category' })
     deductible: boolean
 
-    // @Field(() => ID, { description: 'Name of the category' })
-    // groupId: string
+    @Field(() => ID, { description: 'Name of the category' })
+    groupId: string
 }

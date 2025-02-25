@@ -13,78 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Feature {
-  id String @id @default(uuid())
-
-  name        String  @unique
-  description String?
-
-  permissions Permission[]
-  companies   Company[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Permission {
-  id String @id @default(uuid())
-
-  name String @unique
-  code String @unique
-
-  featureId String
-  feature   Feature @relation(fields: [featureId], references: [id])
-
-  roles Role[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Role {
-  id String @id @default(uuid())
-
-  name String @unique
-
-  users User[]
-
-  permissions Permission[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Address {
-  id String @id @default(uuid())
-
-  address String
-  city    String
-  state   String
-  country String
-  zipCode String
-
-  companies Company[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Company {
-  id String @id @default(uuid())
-
-  name        String  @unique
-  description String?
-
-  users    User[]
-  features Feature[]
-
-  addressId String?
-  address   Address? @relation(fields: [addressId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model User {
   id String @id @default(uuid())
 
@@ -95,12 +23,6 @@ model User {
   phone    String?
   active   Boolean @default(true)
 
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id])
-
-  roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -110,7 +32,6 @@ model CostCenterGroup {
 
   name        String  @unique
   description String?
-  order       Int     @default(autoincrement())
 
   costCenter CostCenter[]
 
@@ -123,7 +44,6 @@ model CostCenter {
 
   name        String  @unique
   description String?
-  order       Int     @default(autoincrement())
 
   beneficiaries Beneficiary[]
   inflows       Inflow[]
@@ -140,7 +60,8 @@ model CategoryGroup {
 
   name        String  @unique
   description String?
-  order       Int     @default(autoincrement())
+
+  categories Category[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -156,6 +77,9 @@ model Category {
   dreClass    String?
   type        String?
   deductible  Boolean @default(false)
+
+  group   CategoryGroup @relation(fields: [groupId], references: [id])
+  groupId String
 
   categories Beneficiary[]
   inflows    Inflow[]

@@ -12,10 +12,4 @@ export class CostCenter extends BaseEntity {
         nullable: true,
     })
     description?: string
-
-    @Field(() => Number, { description: 'Sequence number of the cost center' })
-    order: number
-
-    @Field(() => CostCenterGroup, { description: 'Group of the cost center' })
-    group: CostCenterGroup
 }

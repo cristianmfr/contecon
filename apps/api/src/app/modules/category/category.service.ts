@@ -20,11 +20,16 @@ export class CategoryService {
     }
 
     async create(data: CreateCategoryInput) {
-        const { ...rest } = data
+        const { groupId, ...rest } = data
 
         return this.prisma.category.create({
             data: {
                 ...rest,
+                group: {
+                    connect: {
+                        id: groupId,
+                    }
+                }
             },
         })
     }
