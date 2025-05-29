@@ -1,0 +1,8 @@
+{
+   "extends": "@contecon/typescript/library.json",
+   "compilerOptions": {
+      "baseUrl": "."
+   },
+   "include": ["."],
+   "exclude": ["node_modules", "dist"]
+}

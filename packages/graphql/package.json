@@ -1,0 +1,21 @@
+{
+  "name": "@contecon/graphql",
+  "version": "0.0.0",
+  "scripts": {
+    "generate": "graphql-codegen"
+  },
+  "exports": {
+    "./lib/*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@graphql-codegen/cli": "^5.0.6",
+    "prettier": "^3.5.3"
+  },
+  "devDependencies": {
+    "@contecon/eslint": "workspace:*",
+    "@contecon/prettier": "workspace:*",
+    "@contecon/typescript": "workspace:*",
+    "@types/node": "^20",
+    "typescript": "^5.7.3"
+  }
+}

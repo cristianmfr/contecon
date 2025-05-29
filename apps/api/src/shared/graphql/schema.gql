@@ -1,0 +1,455 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  email: String!
+  role: UserRole!
+  resetToken: String
+  isActive: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum UserRole {
+  user
+  admin
+}
+
+type Auth {
+  user: User!
+  accessToken: String!
+}
+
+type PaginatedUsers {
+  items: [User!]!
+  total: Int!
+}
+
+type Category {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String
+  isActive: Boolean!
+}
+
+type PaginatedCategories {
+  items: [Category!]!
+  total: Int!
+}
+
+type Account {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  bank: String
+  description: String
+  number: String
+  agency: String
+  type: AccountType!
+  balance: Float!
+  credit: Float!
+}
+
+enum AccountType {
+  checking
+  savings
+  investment
+  credit_card
+  other
+}
+
+type PaginatedAccounts {
+  items: [Account!]!
+  total: Int!
+}
+
+type Center {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String
+  isActive: Boolean!
+}
+
+type PaginatedCenters {
+  items: [Category!]!
+  total: Int!
+}
+
+type Beneficiary {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  email: String!
+  phone: String
+  document: String
+  documentType: DocumentType
+  birthdate: DateTime
+  type: BeneficiaryType
+}
+
+enum DocumentType {
+  cpf
+  cnpj
+  rg
+}
+
+enum BeneficiaryType {
+  client
+  supplier
+}
+
+type PaginatedBeneficiaries {
+  items: [Beneficiary!]!
+  total: Int!
+}
+
+type Entry {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  receiveFrom: String!
+  type: String!
+  description: String
+  totalValue: Float!
+  dueDate: DateTime
+  paymentDate: DateTime
+  offsetDate: DateTime
+  status: EntryStatus!
+  category: Category
+  center: Center
+  beneficiary: Beneficiary
+  account: Account
+}
+
+enum EntryStatus {
+  pending
+  received
+  overdue
+  cancelled
+  partially_received
+}
+
+type PaginatedEntries {
+  items: [Entry!]!
+  total: Int!
+}
+
+type RecurringBilling {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String!
+  amount: Float!
+  startDate: DateTime!
+  endDate: DateTime!
+  isActive: Boolean!
+  category: Category!
+  center: Center!
+}
+
+type PaginatedRecurringBills {
+  items: [RecurringBilling!]!
+  total: Int!
+}
+
+type Invoice {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String
+  amount: Float!
+  dueDate: DateTime!
+  status: InvoiceStatus!
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
+}
+
+type PaginatedInvoices {
+  items: [Invoice!]!
+  total: Int!
+}
+
+type Schedule {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String!
+  type: ScheduleType!
+  startDate: DateTime!
+  endDate: DateTime!
+  isActive: Boolean!
+  reminder: Boolean!
+  reminderDaysBefore: Int
+  identifierColor: String
+}
+
+enum ScheduleType {
+  recurring
+  one_time
+}
+
+type Query {
+  users(query: QueryPaginationInput!): PaginatedUsers!
+  user(id: String!): User!
+  userByResetToken(token: String!): User!
+  categories(query: QueryPaginationInput): PaginatedCategories!
+  category(id: String!): Category!
+  centers(query: QueryPaginationInput): PaginatedCenters!
+  center(id: String!): Center!
+  accounts(query: QueryPaginationInput): PaginatedAccounts!
+  account(id: String!): Account!
+  beneficiaries(query: QueryPaginationInput): PaginatedBeneficiaries!
+  beneficiary(id: String!): Beneficiary!
+  entries(query: QueryPaginationInput): PaginatedEntries!
+  entry(id: String!): Entry!
+  recurringBills(query: QueryPaginationInput): PaginatedRecurringBills!
+  recurringBill(id: String!): RecurringBilling!
+  invoices(query: QueryPaginationInput): PaginatedInvoices!
+  invoice(id: String!): Invoice!
+  schedules: [Schedule!]!
+  schedule(id: String!): Schedule!
+}
+
+input QueryPaginationInput {
+  skip: Int
+  take: Int
+  search: String
+}
+
+type Mutation {
+  signIn(input: SignInInput!): Auth!
+  createUser(data: CreateUserInput!): User!
+  updateUser(data: UpdateUserInput!): User!
+  deleteUser(id: String!): String!
+  createResetToken(email: String!): String!
+  resetPassword(token: String!, password: String!): String!
+  createCategory(data: CreateCategoryInput!): String!
+  updateCategory(data: UpdateCategoryInput!): String!
+  deleteCategory(id: String!): String!
+  createCenter(data: CreateCenterInput!): String!
+  updateCenter(data: UpdateCenterInput!): String!
+  deleteCenter(id: String!): String!
+  createAccount(data: CreateAccountInput!): String!
+  updateAccount(data: UpdateAccountInput!): String!
+  deleteAccount(id: String!): String!
+  createBeneficiary(data: CreateBeneficiaryInput!): String!
+  updateBeneficiary(data: UpdateBeneficiaryInput!): String!
+  deleteBeneficiary(id: String!): String!
+  createEntry(data: CreateEntryInput!): String!
+  updateEntry(data: UpdateEntryInput!): String!
+  deleteEntry(id: String!): String!
+  createRecurringBill(data: CreateRecurringBillInput!): String!
+  updateRecurringBill(data: UpdateRecurringBillInput!): String!
+  deleteRecurringBill(id: String!): String!
+  createInvoice(data: CreateInvoiceInput!): String!
+  deleteInvoice(id: String!): String!
+  createSchedule(data: CreateScheduleInput!): String!
+  updateSchedule(data: UpdateScheduleInput!): String!
+  deleteSchedule(id: String!): String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+  role: UserRole!
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+  password: String
+  role: UserRole
+  id: ID!
+}
+
+input CreateCategoryInput {
+  name: String!
+  description: String
+  isActive: Boolean
+}
+
+input UpdateCategoryInput {
+  name: String
+  description: String
+  isActive: Boolean
+  id: String!
+}
+
+input CreateCenterInput {
+  name: String!
+  description: String
+  isActive: Boolean
+}
+
+input UpdateCenterInput {
+  name: String
+  description: String
+  isActive: Boolean
+  id: String!
+}
+
+input CreateAccountInput {
+  name: String!
+  bank: String
+  description: String
+  number: String
+  agency: String
+  type: AccountType!
+  balance: Float!
+  credit: Float!
+}
+
+input UpdateAccountInput {
+  name: String
+  bank: String
+  description: String
+  number: String
+  agency: String
+  type: AccountType
+  balance: Float
+  credit: Float
+  id: ID!
+}
+
+input CreateBeneficiaryInput {
+  name: String!
+  email: String!
+  phone: String
+  document: String
+  documentType: DocumentType
+  birthdate: DateTime
+  type: BeneficiaryType
+}
+
+input UpdateBeneficiaryInput {
+  name: String
+  email: String
+  phone: String
+  document: String
+  documentType: DocumentType
+  birthdate: DateTime
+  type: BeneficiaryType
+  id: String!
+}
+
+input CreateEntryInput {
+  receiveFrom: String!
+  type: EntryType!
+  description: String
+  totalValue: Float!
+  dueDate: DateTime
+  paymentDate: DateTime
+  offsetDate: DateTime
+  status: EntryStatus!
+  centerId: ID
+  categoryId: ID
+  accountId: ID
+  beneficiaryId: ID
+}
+
+enum EntryType {
+  receipt
+  payment
+  transfer
+}
+
+input UpdateEntryInput {
+  receiveFrom: String
+  type: EntryType
+  description: String
+  totalValue: Float
+  dueDate: DateTime
+  paymentDate: DateTime
+  offsetDate: DateTime
+  status: EntryStatus
+  centerId: ID
+  categoryId: ID
+  accountId: ID
+  beneficiaryId: ID
+  id: ID!
+}
+
+input CreateRecurringBillInput {
+  name: String!
+  description: String!
+  amount: Float!
+  startDate: DateTime!
+  endDate: DateTime!
+  isActive: Boolean!
+  categoryId: ID
+  centerId: ID
+}
+
+input UpdateRecurringBillInput {
+  name: String
+  description: String
+  amount: Float
+  startDate: DateTime
+  endDate: DateTime
+  isActive: Boolean
+  categoryId: ID
+  centerId: ID
+  id: ID!
+}
+
+input CreateInvoiceInput {
+  name: String!
+  description: String
+  amount: Float!
+  dueDate: DateTime!
+  status: InvoiceStatus!
+}
+
+input CreateScheduleInput {
+  name: String!
+  description: String!
+  identifierColor: String
+  type: ScheduleType!
+  startDate: DateTime!
+  endDate: DateTime!
+  isActive: Boolean!
+  reminder: Boolean!
+  reminderDaysBefore: Float
+}
+
+input UpdateScheduleInput {
+  name: String
+  description: String
+  identifierColor: String
+  type: ScheduleType
+  startDate: DateTime
+  endDate: DateTime
+  isActive: Boolean
+  reminder: Boolean
+  reminderDaysBefore: Float
+  id: String!
+}
