@@ -1,9 +1,13 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Redefinir senha',
+	title: 'Redefinir senha',
 }
 
-export default function ResetPasswordLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+export default function ResetPasswordLayout({
+	children,
+}: {
+	children: React.ReactNode
+}) {
+	return <>{children}</>
 }

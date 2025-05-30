@@ -1,20 +1,27 @@
 'use client'
 
 import { ApolloProvider } from '@apollo/client'
-import { Suspense } from 'react'
 import { Toaster } from '@contecon/ui/components/toaster'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { Suspense } from 'react'
+
 import { apolloClient } from '../lib/apollo-client'
 import { ThemeProvider } from './theme-provider'
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Suspense>
-      <ApolloProvider client={apolloClient}>
-        <ThemeProvider attribute='class' defaultTheme='dark' enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
-        <Toaster />
-      </ApolloProvider>
-    </Suspense>
-  )
+	return (
+		<Suspense>
+			<ApolloProvider client={apolloClient}>
+				<ThemeProvider
+					attribute='class'
+					defaultTheme='dark'
+					enableSystem
+					disableTransitionOnChange
+				>
+					<NuqsAdapter>{children}</NuqsAdapter>
+				</ThemeProvider>
+				<Toaster />
+			</ApolloProvider>
+		</Suspense>
+	)
 }

@@ -1,14 +1,20 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Categorias',
+	title: 'Categorias',
 }
 
-export default function CategoriesLayout({ children, modal }: { modal: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <>
-      {modal}
-      {children}
-    </>
-  )
+export default function CategoriesLayout({
+	children,
+	modal,
+}: {
+	modal: React.ReactNode
+	children: React.ReactNode
+}) {
+	return (
+		<>
+			{modal}
+			{children}
+		</>
+	)
 }

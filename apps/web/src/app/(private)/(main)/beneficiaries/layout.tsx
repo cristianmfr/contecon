@@ -1,20 +1,20 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Favorecidos',
+	title: 'Favorecidos',
 }
 
 export default function BeneficiariesLayout({
-  children,
-  modal,
+	children,
+	modal,
 }: {
-  modal: React.ReactNode
-  children: React.ReactNode
+	modal: React.ReactNode
+	children: React.ReactNode
 }) {
-  return (
-    <>
-      {modal}
-      {children}
-    </>
-  )
+	return (
+		<>
+			{modal}
+			{children}
+		</>
+	)
 }
