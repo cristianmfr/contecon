@@ -4,6 +4,7 @@ import {
 	InMemoryCache,
 	registerApolloClient,
 } from '@apollo/client-integration-nextjs'
+import { env } from '@contecon/env'
 import { cookies } from 'next/headers'
 
 const getToken = async () => {
@@ -20,7 +21,7 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
 		return new ApolloClient({
 			cache: new InMemoryCache(),
 			link: new HttpLink({
-				uri: process.env.NEXT_PUBLIC_API_URL,
+				uri: env.NEXT_PUBLIC_GRAPHQL_URL,
 				headers: {
 					Authorization: token,
 				},

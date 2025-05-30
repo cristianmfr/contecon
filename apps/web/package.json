@@ -9,6 +9,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@contecon/env": "workspace:*",
 		"@apollo/client": "^3.13.8",
 		"@apollo/client-integration-nextjs": "^0.12.2",
 		"@contecon/graphql": "workspace:*",
