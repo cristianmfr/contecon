@@ -1,10 +1,10 @@
 'use client'
 
+import { useBeneficiaryParams } from '@/src/hooks/use-beneficiary-params'
 import { Button } from '@contecon/ui/components/button'
-import { useRouter } from 'next/navigation'
 
 export function BeneficiariesEmptyState() {
-	const router = useRouter()
+	const { setParams } = useBeneficiaryParams()
 
 	return (
 		<div className='flex items-center justify-center w-full h-56'>
@@ -19,7 +19,7 @@ export function BeneficiariesEmptyState() {
 
 				<Button
 					variant='outline'
-					onClick={() => router.push('/beneficiaries/create')}
+					onClick={() => setParams({ createBeneficiary: true })}
 				>
 					Criar favorecido
 				</Button>

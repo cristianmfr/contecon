@@ -1,10 +1,10 @@
 'use client'
 
+import { useAccountParams } from '@/src/hooks/use-account-params'
 import { Button } from '@contecon/ui/components/button'
-import { useRouter } from 'next/navigation'
 
 export function AccountsEmptyState() {
-	const router = useRouter()
+	const { setParams } = useAccountParams()
 
 	return (
 		<div className='flex items-center justify-center w-full h-56'>
@@ -19,7 +19,7 @@ export function AccountsEmptyState() {
 
 				<Button
 					variant='outline'
-					onClick={() => router.push('/accounts/create')}
+					onClick={() => setParams({ createAccount: true })}
 				>
 					Criar conta
 				</Button>

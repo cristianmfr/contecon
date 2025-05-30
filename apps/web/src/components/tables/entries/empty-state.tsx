@@ -1,10 +1,10 @@
 'use client'
 
+import { useEntryParams } from '@/src/hooks/use-entry-params'
 import { Button } from '@contecon/ui/components/button'
-import { useRouter } from 'next/navigation'
 
 export function EntriesEmptyState() {
-	const router = useRouter()
+	const { setParams } = useEntryParams()
 
 	return (
 		<div className='flex items-center justify-center w-full h-56'>
@@ -18,7 +18,7 @@ export function EntriesEmptyState() {
 				</div>
 				<Button
 					variant='outline'
-					onClick={() => router.push('/entries/create')}
+					onClick={() => setParams({ createEntry: true })}
 				>
 					Criar lançamento
 				</Button>
