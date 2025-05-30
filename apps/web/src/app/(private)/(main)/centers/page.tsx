@@ -1,32 +1,46 @@
-import {
-	PageContent,
-	PageHeader,
-	PageLayout,
-	PageTitle,
-} from '@/src/components/page-layout'
-import { BreadcrumbItem } from '@/src/components/page-layout'
+import { CreateCenterDialog } from '@/src/components/dialogs/center-create-dialog'
+import { CenterUpdateDialog } from '@/src/components/dialogs/center-update-dialog'
 import { CentersTable } from '@/src/components/tables/centers/data-table'
+import { Metadata } from 'next'
+import { revalidatePath } from 'next/cache'
 
-const breadcrumbData: BreadcrumbItem[] = [
-	{
-		label: 'Dashboard',
-		url: '/',
-	},
-	{
-		label: 'Centros de custo',
-		url: '/centers',
-	},
-]
+import { getCentersAction } from './actions'
 
-export default function Centers() {
+type SearchParams = { [key: string]: string | undefined }
+
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}): Promise<Metadata> {
+	return {
+		title: 'Centros de custos',
+	}
+}
+
+export default async function CentersPage({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}) {
+	const { centers } = await getCentersAction()
+
+	const revalidateCache = async () => {
+		'use server'
+
+		revalidatePath('/centerss', 'page')
+	}
+
 	return (
-		<PageLayout>
-			<PageHeader breadcrumbs={breadcrumbData}>
-				<PageTitle>Centros de custo</PageTitle>
-			</PageHeader>
-			<PageContent>
-				<CentersTable />
-			</PageContent>
-		</PageLayout>
+		<>
+			<CentersTable
+				centers={centers.items}
+				revalidateCentersPath={revalidateCache}
+			/>
+
+			<CreateCenterDialog onRevalidateCache={revalidateCache} />
+
+			<CenterUpdateDialog onRevalidateCache={revalidateCache} />
+		</>
 	)
 }

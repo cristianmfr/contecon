@@ -1,6 +1,6 @@
 'use client'
 
-import { SCHEDULES } from '@/src/server/schedules/schedules'
+import { SCHEDULES } from '@/src/graphql/queries'
 import { useQuery } from '@apollo/client'
 import { Card, CardContent } from '@contecon/ui/components/card'
 import { ptBR } from 'date-fns/locale'

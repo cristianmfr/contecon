@@ -1,11 +1,11 @@
 import { useQueryStates } from 'nuqs'
 import { parseAsBoolean, parseAsString } from 'nuqs/server'
 
-export function useCenterParams() {
+export const useEntryParams = () => {
 	const [params, setParams] = useQueryStates({
-		centerId: parseAsString,
-		createCenter: parseAsBoolean,
-		deleteCenterId: parseAsString,
+		entryId: parseAsString,
+		createEntry: parseAsBoolean,
+		deleteEntryId: parseAsString,
 	})
 
 	return {

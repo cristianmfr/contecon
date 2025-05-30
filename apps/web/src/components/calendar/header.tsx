@@ -1,4 +1,4 @@
-import { CREATE_SCHEDULE } from '@/src/server/schedules/create-schedule'
+import { CREATE_SCHEDULE } from '@/src/graphql/mutations'
 import { useMutation } from '@apollo/client'
 import { ScheduleType } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'

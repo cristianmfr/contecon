@@ -1,32 +1,46 @@
-import {
-	PageContent,
-	PageHeader,
-	PageLayout,
-	PageTitle,
-} from '@/src/components/page-layout'
-import { BreadcrumbItem } from '@/src/components/page-layout'
+import { AccountCreateDialog } from '@/src/components/dialogs/account-create-dialog'
+import { AccountUpdateDialog } from '@/src/components/dialogs/account-update-dialog'
 import { AccountsTable } from '@/src/components/tables/accounts/data-table'
+import { Metadata } from 'next'
+import { revalidatePath } from 'next/cache'
 
-const breadcrumbData: BreadcrumbItem[] = [
-	{
-		label: 'Dashboard',
-		url: '/',
-	},
-	{
-		label: 'Contas financeiras',
-		url: '/accounts',
-	},
-]
+import { getAccountsAction } from './actions'
 
-export default function Accounts() {
+type SearchParams = { [key: string]: string | undefined }
+
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}): Promise<Metadata> {
+	return {
+		title: 'Contas financeiras',
+	}
+}
+
+export default async function AccountsPage({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}) {
+	const { accounts } = await getAccountsAction()
+
+	const revalidateCache = async () => {
+		'use server'
+
+		revalidatePath('/accounts', 'page')
+	}
+
 	return (
-		<PageLayout>
-			<PageHeader breadcrumbs={breadcrumbData}>
-				<PageTitle>Contas financeiras</PageTitle>
-			</PageHeader>
-			<PageContent>
-				<AccountsTable />
-			</PageContent>
-		</PageLayout>
+		<>
+			<AccountsTable
+				accounts={accounts.items}
+				revalidateAccountsPath={revalidateCache}
+			/>
+
+			<AccountCreateDialog onRevalidateCache={revalidateCache} />
+
+			<AccountUpdateDialog onRevalidateCache={revalidateCache} />
+		</>
 	)
 }

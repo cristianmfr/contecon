@@ -13,7 +13,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export const AccountColumns: ColumnDef<Account>[] = [
+export const columns: ColumnDef<Account>[] = [
 	{
 		header: 'Banco',
 		accessorKey: 'bank',

@@ -1,14 +1,13 @@
 'use client'
 
-import { DeleteItemModal } from '@/src/components/modals/delete-item-modal'
-import { SearchInput } from '@/src/components/search-input'
-import { useRefetchStore } from '@/src/lib/use-refetch-store'
-import { ACCOUNTS } from '@/src/server/accounts/accounts.query'
-import { DELETE_ACCOUNT } from '@/src/server/accounts/delete-account.mutation'
-import { useMutation, useQuery } from '@apollo/client'
+import { AlertDeleteDialog } from '@/src/components/dialogs/alert-delete.dialog'
+import { DELETE_ACCOUNT } from '@/src/graphql/mutations'
+import { ACCOUNTS } from '@/src/graphql/queries'
+import { useAccountParams } from '@/src/hooks/use-account-params'
+import { useMutation } from '@apollo/client'
+import { Account, Beneficiary } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
-import { Card, CardContent, CardFooter } from '@contecon/ui/components/card'
-import { CardHeader } from '@contecon/ui/components/card'
+import { Card, CardContent, CardHeader } from '@contecon/ui/components/card'
 import {
 	Table,
 	TableBody,
@@ -21,86 +20,75 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from '@tanstack/react-table'
-import { Plus } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Plus, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { PaginatedControls } from '../../paginated-controls'
-import { AccountColumns } from './columns'
-import { AccountsEmpty } from './empty'
+import { SearchInput } from '../../search-input'
+import { columns } from './columns'
+import { AccountsEmptyState } from './empty-state'
 import { AccountsRow } from './row'
-import { AccountsSkeleton } from './skeleton'
 
-export const AccountsTable = () => {
-	const router = useRouter()
+export const AccountsTable = ({
+	accounts,
+	revalidateAccountsPath,
+}: {
+	accounts: Account[]
+	revalidateAccountsPath: () => Promise<void>
+}) => {
+	const { setParams, deleteAccountId } = useAccountParams()
 
-	const shouldRefetch = useRefetchStore((s) => s.shouldRefetch)
-	const setShouldRefetch = useRefetchStore((s) => s.setShouldRefetch)
-
-	const {
-		data,
-		loading,
-		refetch: refetchAccounts,
-	} = useQuery(ACCOUNTS, {
-		fetchPolicy: 'network-only',
-		notifyOnNetworkStatusChange: true,
-	})
-
-	const [deleteAccount] = useMutation(DELETE_ACCOUNT)
-
-	const searchParams = useSearchParams()
-	const itemId = searchParams.get('deleteId')
-
-	const handleDeleteAccount = () => {
-		deleteAccount({
-			variables: {
-				deleteAccountId: itemId,
+	const [deleteAccount, { loading: deleteAccountLoading }] = useMutation(
+		DELETE_ACCOUNT,
+		{
+			variables: { deleteAccountId },
+			refetchQueries: [
+				{ query: ACCOUNTS, variables: { query: { skip: 0, take: 10 } } },
+			],
+			onCompleted: () => {
+				toast.success('Conta financeira deletada com sucesso!')
+				revalidateAccountsPath()
 			},
-		})
-			.then(() => {
-				refetchAccounts()
-				router.push('/accounts')
-				toast.success('Conta deletada com sucesso')
-			})
-			.catch((error) => {
-				console.error(error.message)
-				toast.error('Erro ao deletar conta')
-			})
-	}
+			onError: (error) => {
+				toast.error('Erro ao deletar conta financeira!')
+				console.error(error)
+			},
+		},
+	)
 
 	const table = useReactTable({
-		data: data?.accounts.items || [],
-		columns: AccountColumns,
+		data: accounts,
+		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	useEffect(() => {
-		if (shouldRefetch) {
-			refetchAccounts()
-			setShouldRefetch(false)
-		}
-	}, [shouldRefetch])
-
-	if (loading) return <AccountsSkeleton />
+	if (accounts.length === 0) {
+		return (
+			<Card>
+				<CardHeader>
+					<AccountsEmptyState />
+				</CardHeader>
+			</Card>
+		)
+	}
 
 	return (
-		<Card>
-			{!(data?.accounts.items.length === 0 || !data?.accounts.items) && (
-				<CardHeader className='grid grid-cols-2'>
+		<>
+			<Card>
+				<CardHeader className='grid grid-cols-2 w-full'>
 					<SearchInput />
-					<div className='flex items-center justify-end'>
-						<Button onClick={() => router.push('/accounts/create')}>
-							<Plus />
-							criar conta
+					<div className='flex items-center justify-end gap-2'>
+						<Button variant='outline' size='icon'>
+							<Settings2 className='size-4' />
+						</Button>
+						<Button
+							size='icon'
+							onClick={() => setParams({ createAccount: true })}
+						>
+							<Plus className='size-4' />
 						</Button>
 					</div>
 				</CardHeader>
-			)}
-			<CardContent>
-				{data?.accounts.items.length === 0 || !data?.accounts.items ? (
-					<AccountsEmpty />
-				) : (
+				<CardContent>
 					<Table className='border-separate border-spacing-y-[5px]'>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -135,18 +123,10 @@ export const AccountsTable = () => {
 							))}
 						</TableBody>
 					</Table>
-				)}
-			</CardContent>
-			<CardFooter>
-				<PaginatedControls
-					total={data?.accounts.total || 0}
-					currentPage={table.getState().pagination.pageIndex}
-					pageSize={table.getState().pagination.pageSize}
-					onPageChange={table.setPageIndex}
-					onPageSizeChange={table.setPageSize}
-				/>
-			</CardFooter>
-			<DeleteItemModal path='/accounts' onDelete={handleDeleteAccount} />
-		</Card>
+				</CardContent>
+			</Card>
+
+			<AlertDeleteDialog onDelete={() => deleteAccount()} />
+		</>
 	)
 }

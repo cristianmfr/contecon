@@ -1,14 +1,13 @@
 'use client'
 
-import { DeleteItemModal } from '@/src/components/modals/delete-item-modal'
-import { SearchInput } from '@/src/components/search-input'
-import { useRefetchStore } from '@/src/lib/use-refetch-store'
-import { BENEFICIARIES } from '@/src/server/beneficiaries/beneficiaries.query'
-import { DELETE_CATEGORY } from '@/src/server/categories/delete-category.mutation'
-import { useMutation, useQuery } from '@apollo/client'
+import { AlertDeleteDialog } from '@/src/components/dialogs/alert-delete.dialog'
+import { DELETE_BENEFICIARY } from '@/src/graphql/mutations'
+import { BENEFICIARIES } from '@/src/graphql/queries'
+import { useBeneficiaryParams } from '@/src/hooks/use-beneficiary-params'
+import { useMutation } from '@apollo/client'
+import { Beneficiary } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
-import { Card, CardContent, CardFooter } from '@contecon/ui/components/card'
-import { CardHeader } from '@contecon/ui/components/card'
+import { Card, CardContent, CardHeader } from '@contecon/ui/components/card'
 import {
 	Table,
 	TableBody,
@@ -21,89 +20,73 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from '@tanstack/react-table'
-import { Plus } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Plus, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { PaginatedControls } from '../../paginated-controls'
-import { BeneficiaryColumns } from './columns'
-import { BeneficiariesEmpty } from './empty'
-import { BeneficiariesRow } from './row'
-import { BeneficiariesSkeleton } from './skeleton'
+import { SearchInput } from '../../search-input'
+import { columns } from './columns'
+import { BeneficiariesEmptyState } from './empty-state'
+import { BeneficiariesRow } from './rows'
 
-export const BeneficiariesTable = () => {
-	const router = useRouter()
+export const BeneficiariesTable = ({
+	beneficiaries,
+	revalidateBeneficiariesPath,
+}: {
+	beneficiaries: Beneficiary[]
+	revalidateBeneficiariesPath: () => Promise<void>
+}) => {
+	const { setParams, deleteBeneficiaryId } = useBeneficiaryParams()
 
-	const shouldRefetch = useRefetchStore((s) => s.shouldRefetch)
-	const setShouldRefetch = useRefetchStore((s) => s.setShouldRefetch)
-
-	const {
-		data,
-		loading,
-		refetch: refetchBeneficiaries,
-	} = useQuery(BENEFICIARIES, {
-		fetchPolicy: 'network-only',
-		notifyOnNetworkStatusChange: true,
-	})
-
-	const [deleteCategory] = useMutation(DELETE_CATEGORY)
-
-	const searchParams = useSearchParams()
-	const itemId = searchParams.get('deleteId')
-
-	const handleDeleteCategory = () => {
-		deleteCategory({
-			variables: {
-				deleteCategoryId: itemId,
+	const [deleteBeneficiary, { loading: deleteBeneficiaryLoading }] =
+		useMutation(DELETE_BENEFICIARY, {
+			variables: { deleteBeneficiaryId },
+			refetchQueries: [
+				{ query: BENEFICIARIES, variables: { query: { skip: 0, take: 10 } } },
+			],
+			onCompleted: () => {
+				toast.success('Favorecido deletado com sucesso!')
+				revalidateBeneficiariesPath()
+			},
+			onError: (error) => {
+				toast.error('Erro ao deletar favorecido!')
+				console.error(error)
 			},
 		})
-			.then(() => {
-				refetchBeneficiaries()
-				router.push('/beneficiaries')
-				toast.success('Favorecido deletado com sucesso')
-			})
-			.catch((error) => {
-				console.error(error.message)
-				toast.error('Erro ao deletar favorecido')
-			})
-	}
 
 	const table = useReactTable({
-		data: data?.beneficiaries.items || [],
-		columns: BeneficiaryColumns,
+		data: beneficiaries,
+		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	useEffect(() => {
-		if (shouldRefetch) {
-			refetchBeneficiaries()
-			setShouldRefetch(false)
-		}
-	}, [shouldRefetch])
-
-	if (loading) return <BeneficiariesSkeleton />
+	if (beneficiaries.length === 0) {
+		return (
+			<Card>
+				<CardHeader>
+					<BeneficiariesEmptyState />
+				</CardHeader>
+			</Card>
+		)
+	}
 
 	return (
-		<Card>
-			{!(
-				data?.beneficiaries.items.length === 0 || !data?.beneficiaries.items
-			) && (
-				<CardHeader className='grid grid-cols-2'>
+		<>
+			<Card>
+				<CardHeader className='grid grid-cols-2 w-full'>
 					<SearchInput />
-					<div className='flex items-center justify-end'>
-						<Button onClick={() => router.push('/beneficiaries/create')}>
-							<Plus />
-							criar favorecido
+					<div className='flex items-center justify-end gap-2'>
+						<Button variant='outline' size='icon'>
+							<Settings2 className='size-4' />
+						</Button>
+						<Button
+							size='icon'
+							onClick={() => setParams({ createBeneficiary: true })}
+						>
+							<Plus className='size-4' />
 						</Button>
 					</div>
 				</CardHeader>
-			)}
-			<CardContent>
-				{data?.beneficiaries.items.length === 0 ||
-				!data?.beneficiaries.items ? (
-					<BeneficiariesEmpty />
-				) : (
+				<CardContent>
 					<Table className='border-separate border-spacing-y-[5px]'>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -138,18 +121,10 @@ export const BeneficiariesTable = () => {
 							))}
 						</TableBody>
 					</Table>
-				)}
-			</CardContent>
-			<CardFooter>
-				<PaginatedControls
-					total={data?.beneficiaries.total || 0}
-					currentPage={table.getState().pagination.pageIndex}
-					pageSize={table.getState().pagination.pageSize}
-					onPageChange={table.setPageIndex}
-					onPageSizeChange={table.setPageSize}
-				/>
-			</CardFooter>
-			<DeleteItemModal path='/beneficiaries' onDelete={handleDeleteCategory} />
-		</Card>
+				</CardContent>
+			</Card>
+
+			<AlertDeleteDialog onDelete={() => deleteBeneficiary()} />
+		</>
 	)
 }

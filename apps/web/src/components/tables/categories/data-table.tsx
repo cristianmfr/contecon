@@ -1,14 +1,13 @@
 'use client'
 
-import { DeleteItemModal } from '@/src/components/modals/delete-item-modal'
-import { SearchInput } from '@/src/components/search-input'
-import { useRefetchStore } from '@/src/lib/use-refetch-store'
-import { CATEGORIES } from '@/src/server/categories/categories.query'
-import { DELETE_CATEGORY } from '@/src/server/categories/delete-category.mutation'
-import { useMutation, useQuery } from '@apollo/client'
+import { AlertDeleteDialog } from '@/src/components/dialogs/alert-delete.dialog'
+import { DELETE_CATEGORY } from '@/src/graphql/mutations'
+import { CATEGORIES } from '@/src/graphql/queries'
+import { useCategoryParams } from '@/src/hooks/use-category-params'
+import { useMutation } from '@apollo/client'
+import { Category } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
-import { Card, CardContent, CardFooter } from '@contecon/ui/components/card'
-import { CardHeader } from '@contecon/ui/components/card'
+import { Card, CardContent, CardHeader } from '@contecon/ui/components/card'
 import {
 	Table,
 	TableBody,
@@ -21,86 +20,74 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from '@tanstack/react-table'
-import { Plus } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Plus, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { PaginatedControls } from '../../paginated-controls'
-import { CategoriesColumns } from './columns'
-import { CategoriesEmpty } from './empty'
-import { CategoriesRow } from './row'
-import { CategoriesSkeleton } from './skeleton'
+import { SearchInput } from '../../search-input'
+import { columns } from './columns'
+import { CategoriesEmptyState } from './empty-state'
+import { CategoriesRow } from './rows'
 
-export const CategoriesTable = () => {
-	const router = useRouter()
+export const CategoriesTable = ({
+	categories,
+	revalidateCategoriesPath,
+}: {
+	categories: Category[]
+	revalidateCategoriesPath: () => Promise<void>
+}) => {
+	const { setParams, deleteCategoryId } = useCategoryParams()
 
-	const shouldRefetch = useRefetchStore((s) => s.shouldRefetch)
-	const setShouldRefetch = useRefetchStore((s) => s.setShouldRefetch)
-
-	const {
-		data,
-		loading,
-		refetch: refetchCategories,
-	} = useQuery(CATEGORIES, {
-		fetchPolicy: 'network-only',
-		notifyOnNetworkStatusChange: true,
-	})
-
-	const [deleteCategory] = useMutation(DELETE_CATEGORY)
-
-	const searchParams = useSearchParams()
-	const itemId = searchParams.get('deleteId')
-
-	const handleDeleteCategory = () => {
-		deleteCategory({
-			variables: {
-				deleteCategoryId: itemId,
+	const [deleteCategory, { loading: deleteCategoryLoading }] = useMutation(
+		DELETE_CATEGORY,
+		{
+			variables: { deleteCategoryId },
+			refetchQueries: [
+				{ query: CATEGORIES, variables: { query: { skip: 0, take: 10 } } },
+			],
+			onCompleted: () => {
+				toast.success('Categoria deletada com sucesso!')
+				revalidateCategoriesPath()
 			},
-		})
-			.then(() => {
-				refetchCategories()
-				router.push('/categories')
-				toast.success('Categoria deletada com sucesso')
-			})
-			.catch((error) => {
-				console.error(error.message)
-				toast.error('Erro ao deletar categoria')
-			})
-	}
-
+			onError: (error) => {
+				toast.error('Erro ao deletar categoria!')
+				console.error(error)
+			},
+		},
+	)
 	const table = useReactTable({
-		data: data?.categories.items || [],
-		columns: CategoriesColumns,
+		data: categories,
+		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	useEffect(() => {
-		if (shouldRefetch) {
-			refetchCategories()
-			setShouldRefetch(false)
-		}
-	}, [shouldRefetch])
-
-	if (loading) return <CategoriesSkeleton />
+	if (categories.length === 0) {
+		return (
+			<Card>
+				<CardHeader>
+					<CategoriesEmptyState />
+				</CardHeader>
+			</Card>
+		)
+	}
 
 	return (
-		<Card>
-			{!(data?.categories.items.length === 0 || !data?.categories.items) && (
-				<CardHeader className='grid grid-cols-2'>
+		<>
+			<Card>
+				<CardHeader className='grid grid-cols-2 w-full'>
 					<SearchInput />
-					<div className='flex items-center justify-end'>
-						<Button onClick={() => router.push('/categories/create')}>
-							<Plus />
-							criar categoria
+					<div className='flex items-center justify-end gap-2'>
+						<Button variant='outline' size='icon'>
+							<Settings2 className='size-4' />
+						</Button>
+						<Button
+							size='icon'
+							onClick={() => setParams({ createCategory: true })}
+						>
+							<Plus className='size-4' />
 						</Button>
 					</div>
 				</CardHeader>
-			)}
-			<CardContent>
-				{data?.categories.items.length === 0 || !data?.categories.items ? (
-					<CategoriesEmpty />
-				) : (
+				<CardContent>
 					<Table className='border-separate border-spacing-y-[5px]'>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -135,18 +122,10 @@ export const CategoriesTable = () => {
 							))}
 						</TableBody>
 					</Table>
-				)}
-			</CardContent>
-			<CardFooter>
-				<PaginatedControls
-					total={data?.categories.total || 0}
-					currentPage={table.getState().pagination.pageIndex}
-					pageSize={table.getState().pagination.pageSize}
-					onPageChange={table.setPageIndex}
-					onPageSizeChange={table.setPageSize}
-				/>
-			</CardFooter>
-			<DeleteItemModal path='/categories' onDelete={handleDeleteCategory} />
-		</Card>
+				</CardContent>
+			</Card>
+
+			<AlertDeleteDialog onDelete={() => deleteCategory()} />
+		</>
 	)
 }

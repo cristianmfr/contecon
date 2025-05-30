@@ -1,32 +1,45 @@
-import {
-	PageContent,
-	PageHeader,
-	PageLayout,
-	PageTitle,
-} from '@/src/components/page-layout'
-import { BreadcrumbItem } from '@/src/components/page-layout'
+import { CreateEntryDialog } from '@/src/components/dialogs/entry-create-dialog'
+import { EntryUpdateDialog } from '@/src/components/dialogs/entry-update-dialog'
 import { EntriesTable } from '@/src/components/tables/entries/data-table'
+import { Metadata } from 'next'
+import { revalidatePath } from 'next/cache'
 
-const breadcrumbData: BreadcrumbItem[] = [
-	{
-		label: 'Dashboard',
-		url: '/',
-	},
-	{
-		label: 'Lançamentos',
-		url: '/entries',
-	},
-]
+import { getEntriesAction } from './actions'
 
-export default function Entries() {
+type SearchParams = { [key: string]: string | undefined }
+
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}): Promise<Metadata> {
+	return {
+		title: 'Lançamentos',
+	}
+}
+
+export default async function EntriesPage({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}) {
+	const { entries } = await getEntriesAction()
+
+	const revalidateCache = async () => {
+		'use server'
+
+		revalidatePath('/entries', 'page')
+	}
+
 	return (
-		<PageLayout>
-			<PageHeader breadcrumbs={breadcrumbData}>
-				<PageTitle>Lançamentos</PageTitle>
-			</PageHeader>
-			<PageContent>
-				<EntriesTable />
-			</PageContent>
-		</PageLayout>
+		<>
+			<EntriesTable
+				entries={entries.items}
+				revalidateEntriesPath={revalidateCache}
+			/>
+
+			<CreateEntryDialog onRevalidateCache={revalidateCache} />
+			<EntryUpdateDialog onRevalidateCache={revalidateCache} />
+		</>
 	)
 }

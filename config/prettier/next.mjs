@@ -1,6 +1,6 @@
 /** @typedef {import('prettier').Config} PrettierConfig */
 
-const baseConfig = {
+const nextConfig = {
   trailingComma: "all",
   tabWidth: 2,
   useTabs: true,
@@ -9,6 +9,10 @@ const baseConfig = {
   jsxSingleQuote: true,
   printWidth: 80,
   arrowParens: "always",
+  importOrder: ["^components/(.*)$", "^[./]"],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
+  plugins: ["@trivago/prettier-plugin-sort-imports"],
 };
 
-export default baseConfig;
+export default nextConfig;

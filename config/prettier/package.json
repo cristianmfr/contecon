@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.mjs"
+    ".": "./index.mjs",
+    "./nextPrettier": "./next.mjs"
   },
   "devDependencies": {
     "prettier": "^3.5.3"

@@ -1,32 +1,46 @@
-import {
-	PageContent,
-	PageHeader,
-	PageLayout,
-	PageTitle,
-} from '@/src/components/page-layout'
-import { BreadcrumbItem } from '@/src/components/page-layout'
+import { BeneficiaryCreateDialog } from '@/src/components/dialogs/beneficiary-create-dialog'
+import { BeneficiaryUpdateDialog } from '@/src/components/dialogs/beneficiary-update-dialog'
 import { BeneficiariesTable } from '@/src/components/tables/beneficiaries/data-table'
+import { Metadata } from 'next'
+import { revalidatePath } from 'next/cache'
 
-const breadcrumbData: BreadcrumbItem[] = [
-	{
-		label: 'Dashboard',
-		url: '/',
-	},
-	{
-		label: 'Favorecidos',
-		url: '/beneficiaries',
-	},
-]
+import { getBeneficiariesAction } from './actions'
 
-export default function Beneficiaries() {
+type SearchParams = { [key: string]: string | undefined }
+
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}): Promise<Metadata> {
+	return {
+		title: 'Favorecidos',
+	}
+}
+
+export default async function BeneficiariesPage({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}) {
+	const { beneficiaries } = await getBeneficiariesAction()
+
+	const revalidateCache = async () => {
+		'use server'
+
+		revalidatePath('/beneficiaries', 'page')
+	}
+
 	return (
-		<PageLayout>
-			<PageHeader breadcrumbs={breadcrumbData}>
-				<PageTitle>Favorecidos</PageTitle>
-			</PageHeader>
-			<PageContent>
-				<BeneficiariesTable />
-			</PageContent>
-		</PageLayout>
+		<>
+			<BeneficiariesTable
+				beneficiaries={beneficiaries.items}
+				revalidateBeneficiariesPath={revalidateCache}
+			/>
+
+			<BeneficiaryCreateDialog onRevalidateCache={revalidateCache} />
+
+			<BeneficiaryUpdateDialog onRevalidateCache={revalidateCache} />
+		</>
 	)
 }

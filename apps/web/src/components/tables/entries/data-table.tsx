@@ -1,21 +1,13 @@
 'use client'
 
-import { DeleteItemModal } from '@/src/components/modals/delete-item-modal'
-import { SearchInput } from '@/src/components/search-input'
-import { useRefetchStore } from '@/src/lib/use-refetch-store'
-import { DELETE_ENTRY } from '@/src/server/entries/delete-entry.mutation'
-import { ENTRIES } from '@/src/server/entries/entries.query'
-import { useMutation, useQuery } from '@apollo/client'
+import { AlertDeleteDialog } from '@/src/components/dialogs/alert-delete.dialog'
+import { DELETE_ENTRY } from '@/src/graphql/mutations'
+import { ENTRIES } from '@/src/graphql/queries'
+import { useEntryParams } from '@/src/hooks/use-entry-params'
+import { useMutation } from '@apollo/client'
+import { Entry } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
-import { Card, CardContent, CardFooter } from '@contecon/ui/components/card'
-import { CardHeader } from '@contecon/ui/components/card'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@contecon/ui/components/dropdown-menu'
+import { Card, CardContent, CardHeader } from '@contecon/ui/components/card'
 import {
 	Table,
 	TableBody,
@@ -28,122 +20,74 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from '@tanstack/react-table'
-import {
-	FilePlus,
-	FileSpreadsheet,
-	FileText,
-	Menu,
-	Pencil,
-	Plus,
-	Trash2,
-} from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Plus, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { PaginatedControls } from '../../paginated-controls'
-import { EntriesColumns } from './columns'
-import { EntriesEmpty } from './empty'
+import { SearchInput } from '../../search-input'
+import { columns } from './columns'
+import { EntriesEmptyState } from './empty-state'
 import { EntriesRow } from './row'
-import { EntriesSkeleton } from './skeleton'
 
-export const EntriesTable = () => {
-	const router = useRouter()
+export const EntriesTable = ({
+	entries,
+	revalidateEntriesPath,
+}: {
+	entries: Entry[]
+	revalidateEntriesPath: () => Promise<void>
+}) => {
+	const { setParams, deleteEntryId } = useEntryParams()
 
-	const shouldRefetch = useRefetchStore((s) => s.shouldRefetch)
-	const setShouldRefetch = useRefetchStore((s) => s.setShouldRefetch)
-
-	const {
-		data,
-		loading,
-		refetch: refetchEntries,
-	} = useQuery(ENTRIES, {
-		fetchPolicy: 'network-only',
-		notifyOnNetworkStatusChange: true,
-	})
-
-	const [deleteEntry] = useMutation(DELETE_ENTRY)
-
-	const searchParams = useSearchParams()
-	const itemId = searchParams.get('deleteId')
-
-	const handleDeleteEntry = () => {
-		deleteEntry({
-			variables: {
-				deleteEntryId: itemId,
+	const [deleteEntry, { loading: deleteEntryLoading }] = useMutation(
+		DELETE_ENTRY,
+		{
+			variables: { deleteEntryId },
+			refetchQueries: [
+				{ query: ENTRIES, variables: { query: { skip: 0, take: 10 } } },
+			],
+			onCompleted: () => {
+				toast.success('Lançamento deletado com sucesso!')
+				revalidateEntriesPath()
 			},
-		})
-			.then(() => {
-				refetchEntries()
-				router.push('/entries')
-				toast.success('Lançamento deletado com sucesso')
-			})
-			.catch((error) => {
-				console.error(error.message)
-				toast.error('Erro ao deletar lançamento')
-			})
-	}
-
+			onError: (error) => {
+				toast.error('Erro ao deletar lançamento!')
+				console.error(error)
+			},
+		},
+	)
 	const table = useReactTable({
-		data: data?.entries.items || [],
-		columns: EntriesColumns,
+		data: entries,
+		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	useEffect(() => {
-		if (shouldRefetch) {
-			refetchEntries()
-			setShouldRefetch(false)
-		}
-	}, [shouldRefetch])
-
-	if (loading) return <EntriesSkeleton />
+	if (entries.length === 0) {
+		return (
+			<Card>
+				<CardHeader>
+					<EntriesEmptyState />
+				</CardHeader>
+			</Card>
+		)
+	}
 
 	return (
-		<Card>
-			{!(data?.entries.items.length === 0 || !data?.entries.items) && (
-				<CardHeader className='grid grid-cols-2'>
+		<>
+			<Card>
+				<CardHeader className='grid grid-cols-2 w-full'>
 					<SearchInput />
 					<div className='flex items-center justify-end gap-2'>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant='outline' size='icon'>
-									<Menu />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent>
-								<DropdownMenuItem>
-									<FilePlus />
-									Criar nota fiscal
-								</DropdownMenuItem>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem>
-									<FileSpreadsheet />
-									Exportar CSV
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<FileText />
-									Exportar PDF
-								</DropdownMenuItem>
-								<DropdownMenuSeparator />
-
-								<DropdownMenuItem>
-									<Trash2 />
-									Excluir
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-						<Button onClick={() => router.push('/entries/create')}>
-							<Plus />
-							criar lançamento
+						<Button variant='outline' size='icon'>
+							<Settings2 className='size-4' />
+						</Button>
+						<Button
+							size='icon'
+							onClick={() => setParams({ createEntry: true })}
+						>
+							<Plus className='size-4' />
 						</Button>
 					</div>
 				</CardHeader>
-			)}
-			<CardContent>
-				{data?.entries.items.length === 0 || !data?.entries.items ? (
-					<EntriesEmpty />
-				) : (
+				<CardContent>
 					<Table className='border-separate border-spacing-y-[5px]'>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -178,18 +122,10 @@ export const EntriesTable = () => {
 							))}
 						</TableBody>
 					</Table>
-				)}
-			</CardContent>
-			<CardFooter>
-				<PaginatedControls
-					total={data?.entries.total || 0}
-					currentPage={table.getState().pagination.pageIndex}
-					pageSize={table.getState().pagination.pageSize}
-					onPageChange={table.setPageIndex}
-					onPageSizeChange={table.setPageSize}
-				/>
-			</CardFooter>
-			<DeleteItemModal path='/entries' onDelete={handleDeleteEntry} />
-		</Card>
+				</CardContent>
+			</Card>
+
+			<AlertDeleteDialog onDelete={() => deleteEntry()} />
+		</>
 	)
 }

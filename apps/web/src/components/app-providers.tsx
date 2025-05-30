@@ -18,7 +18,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<NuqsAdapter>{children}</NuqsAdapter>
+					{children}
 				</ThemeProvider>
 				<Toaster />
 			</ApolloProvider>

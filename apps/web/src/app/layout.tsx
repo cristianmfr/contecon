@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 
 import { AppProvider } from '../components/app-providers'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const fontSans = Geist({
 	subsets: ['latin'],
@@ -31,7 +32,9 @@ export default function RootLayout({
 			<body
 				className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
 			>
-				<AppProvider>{children}</AppProvider>
+				<NuqsAdapter>
+					<AppProvider>{children}</AppProvider>
+				</NuqsAdapter>
 			</body>
 		</html>
 	)

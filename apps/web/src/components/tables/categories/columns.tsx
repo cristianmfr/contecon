@@ -1,4 +1,6 @@
-import { useSearchParams } from '@/src/hooks/use-search-params'
+'use client'
+
+import { useCategoryParams } from '@/src/hooks/use-category-params'
 import { Category } from '@contecon/graphql/lib/graphql'
 import { Badge } from '@contecon/ui/components/badge'
 import { Button } from '@contecon/ui/components/button'
@@ -9,10 +11,9 @@ import {
 	DropdownMenuTrigger,
 } from '@contecon/ui/components/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { MoreVertical, Pencil, Trash } from 'lucide-react'
 
-export const CategoriesColumns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Category>[] = [
 	{
 		header: 'Nome',
 		accessorKey: 'name',
@@ -24,38 +25,41 @@ export const CategoriesColumns: ColumnDef<Category>[] = [
 	{
 		header: 'Status',
 		accessorKey: 'isActive',
-		cell: ({ row }) => {
-			return <Badge>{row.original.isActive ? 'Ativo' : 'Inativo'}</Badge>
-		},
+		cell: ({ row }) => (
+			<Badge variant='outline'>
+				{row.original.isActive ? 'Ativo' : 'Inativo'}
+			</Badge>
+		),
 	},
 	{
 		id: 'actions',
 		cell: ({ row }) => {
-			const router = useRouter()
-			const { setParam } = useSearchParams()
+			const { id } = row.original
+
+			const { setParams } = useCategoryParams()
 
 			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant='ghost' size='icon'>
-							<MoreVertical className='size-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem
-							onClick={() => router.push(`/categories/${row.original.id}`)}
-						>
-							<Pencil />
-							Editar
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => setParam('deleteId', row.original.id)}
-						>
-							<Trash2 />
-							Excluir
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<div className='flex items-center justify-end'>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant='ghost' size='xs'>
+								<MoreVertical className='size-4' />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem onClick={() => setParams({ categoryId: id })}>
+								<Pencil className='w-4 h-4' />
+								Editar
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => setParams({ deleteCategoryId: id })}
+							>
+								<Trash className='w-4 h-4' />
+								Excluir
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 			)
 		},
 	},

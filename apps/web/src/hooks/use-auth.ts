@@ -1,12 +1,11 @@
 'use client'
 
+import { SIGN_IN } from '@/src/graphql/mutations'
 import { useMutation } from '@apollo/client'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-
-import { SIGN_IN } from '../server/auth/sign-in.mutation'
 
 type UserType = {
 	id: string

@@ -1,32 +1,46 @@
-import {
-	PageContent,
-	PageHeader,
-	PageLayout,
-	PageTitle,
-} from '@/src/components/page-layout'
-import { BreadcrumbItem } from '@/src/components/page-layout'
+import { CategoryCreateDialog } from '@/src/components/dialogs/category-create-dialog'
+import { CategoryUpdateDialog } from '@/src/components/dialogs/category-update-dialog'
 import { CategoriesTable } from '@/src/components/tables/categories/data-table'
+import { Metadata } from 'next'
+import { revalidatePath } from 'next/cache'
 
-const breadcrumbData: BreadcrumbItem[] = [
-	{
-		label: 'Dashboard',
-		url: '/',
-	},
-	{
-		label: 'Categorias',
-		url: '/categories',
-	},
-]
+import { getCategoriesAction } from './actions'
 
-export default function Categories() {
+type SearchParams = { [key: string]: string | undefined }
+
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}): Promise<Metadata> {
+	return {
+		title: 'Categorias',
+	}
+}
+
+export default async function CategoriesPage({
+	searchParams,
+}: {
+	searchParams: SearchParams
+}) {
+	const { categories } = await getCategoriesAction()
+
+	const revalidateCache = async () => {
+		'use server'
+
+		revalidatePath('/categories', 'page')
+	}
+
 	return (
-		<PageLayout>
-			<PageHeader breadcrumbs={breadcrumbData}>
-				<PageTitle>Categorias</PageTitle>
-			</PageHeader>
-			<PageContent>
-				<CategoriesTable />
-			</PageContent>
-		</PageLayout>
+		<>
+			<CategoriesTable
+				categories={categories.items}
+				revalidateCategoriesPath={revalidateCache}
+			/>
+
+			<CategoryCreateDialog onRevalidateCache={revalidateCache} />
+
+			<CategoryUpdateDialog onRevalidateCache={revalidateCache} />
+		</>
 	)
 }

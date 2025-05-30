@@ -26,7 +26,7 @@ import {
 	Trash2,
 } from 'lucide-react'
 
-export const EntriesColumns: ColumnDef<Entry>[] = [
+export const columns: ColumnDef<Entry>[] = [
 	{
 		id: 'select',
 		header: ({ table }) => (

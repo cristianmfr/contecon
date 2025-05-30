@@ -1,9 +1,9 @@
 'use client'
 
-import { ACCOUNTS } from '@/src/server/accounts/accounts.query'
-import { BENEFICIARIES } from '@/src/server/beneficiaries/beneficiaries.query'
-import { CATEGORIES } from '@/src/server/categories/categories.query'
-import { CENTERS } from '@/src/server/centers/centers.query'
+import { ACCOUNTS } from '@/src/graphql/queries'
+import { BENEFICIARIES } from '@/src/graphql/queries'
+import { CATEGORIES } from '@/src/graphql/queries'
+import { CENTERS } from '@/src/graphql/queries'
 import { resolveEntryTypeLabel } from '@/src/utils/resolve-entry-label'
 import { resolveEntryStatusLabel } from '@/src/utils/resolve-entry-status-label'
 import { useQuery } from '@apollo/client'

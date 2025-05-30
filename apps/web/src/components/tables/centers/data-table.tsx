@@ -1,14 +1,13 @@
 'use client'
 
-import { DeleteItemModal } from '@/src/components/modals/delete-item-modal'
-import { SearchInput } from '@/src/components/search-input'
-import { useRefetchStore } from '@/src/lib/use-refetch-store'
-import { CENTERS } from '@/src/server/centers/centers.query'
-import { DELETE_CENTER } from '@/src/server/centers/delete-center.mutation'
-import { useMutation, useQuery } from '@apollo/client'
+import { AlertDeleteDialog } from '@/src/components/dialogs/alert-delete.dialog'
+import { DELETE_CENTER } from '@/src/graphql/mutations'
+import { CENTERS } from '@/src/graphql/queries'
+import { useCenterParams } from '@/src/hooks/use-centers-params'
+import { useMutation } from '@apollo/client'
+import { Center } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
-import { Card, CardContent, CardFooter } from '@contecon/ui/components/card'
-import { CardHeader } from '@contecon/ui/components/card'
+import { Card, CardContent, CardHeader } from '@contecon/ui/components/card'
 import {
 	Table,
 	TableBody,
@@ -21,86 +20,74 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from '@tanstack/react-table'
-import { Plus } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Plus, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { PaginatedControls } from '../../paginated-controls'
-import { CentersColumns } from './columns'
-import { CentersEmpty } from './empty'
-import { CentersRow } from './row'
-import { CentersSkeleton } from './skeleton'
+import { SearchInput } from '../../search-input'
+import { columns } from './columns'
+import { CentersEmptyState } from './empty-state'
+import { CentersRow } from './rows'
 
-export const CentersTable = () => {
-	const router = useRouter()
+export const CentersTable = ({
+	centers,
+	revalidateCentersPath,
+}: {
+	centers: Center[]
+	revalidateCentersPath: () => Promise<void>
+}) => {
+	const { setParams, deleteCenterId } = useCenterParams()
 
-	const shouldRefetch = useRefetchStore((s) => s.shouldRefetch)
-	const setShouldRefetch = useRefetchStore((s) => s.setShouldRefetch)
-
-	const {
-		data,
-		loading,
-		refetch: refetchCenters,
-	} = useQuery(CENTERS, {
-		fetchPolicy: 'network-only',
-		notifyOnNetworkStatusChange: true,
-	})
-
-	const [deleteCenter] = useMutation(DELETE_CENTER)
-
-	const searchParams = useSearchParams()
-	const itemId = searchParams.get('deleteId')
-
-	const handleDeleteCenter = () => {
-		deleteCenter({
-			variables: {
-				deleteCenterId: itemId,
+	const [deleteCenter, { loading: deleteCenterLoading }] = useMutation(
+		DELETE_CENTER,
+		{
+			variables: { deleteCenterId },
+			refetchQueries: [
+				{ query: CENTERS, variables: { query: { skip: 0, take: 10 } } },
+			],
+			onCompleted: () => {
+				toast.success('Centro de custos deletado com sucesso!')
+				revalidateCentersPath()
 			},
-		})
-			.then(() => {
-				refetchCenters()
-				router.push('/centers')
-				toast.success('Centro de custo deletado com sucesso')
-			})
-			.catch((error) => {
-				console.error(error.message)
-				toast.error('Erro ao deletar centro de custo')
-			})
-	}
-
+			onError: (error) => {
+				toast.error('Erro ao deletar centro de custos!')
+				console.error(error)
+			},
+		},
+	)
 	const table = useReactTable({
-		data: data?.centers.items || [],
-		columns: CentersColumns,
+		data: centers,
+		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	useEffect(() => {
-		if (shouldRefetch) {
-			refetchCenters()
-			setShouldRefetch(false)
-		}
-	}, [shouldRefetch])
-
-	if (loading) return <CentersSkeleton />
+	if (centers.length === 0) {
+		return (
+			<Card>
+				<CardHeader>
+					<CentersEmptyState />
+				</CardHeader>
+			</Card>
+		)
+	}
 
 	return (
-		<Card>
-			{!(data?.centers.items.length === 0 || !data?.centers.items) && (
-				<CardHeader className='grid grid-cols-2'>
+		<>
+			<Card>
+				<CardHeader className='grid grid-cols-2 w-full'>
 					<SearchInput />
-					<div className='flex items-center justify-end'>
-						<Button onClick={() => router.push('/centers/create')}>
-							<Plus />
-							criar centro de custo
+					<div className='flex items-center justify-end gap-2'>
+						<Button variant='outline' size='icon'>
+							<Settings2 className='size-4' />
+						</Button>
+						<Button
+							size='icon'
+							onClick={() => setParams({ createCenter: true })}
+						>
+							<Plus className='size-4' />
 						</Button>
 					</div>
 				</CardHeader>
-			)}
-			<CardContent>
-				{data?.centers.items.length === 0 || !data?.centers.items ? (
-					<CentersEmpty />
-				) : (
+				<CardContent>
 					<Table className='border-separate border-spacing-y-[5px]'>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -135,18 +122,10 @@ export const CentersTable = () => {
 							))}
 						</TableBody>
 					</Table>
-				)}
-			</CardContent>
-			<CardFooter>
-				<PaginatedControls
-					total={data?.centers.total || 0}
-					currentPage={table.getState().pagination.pageIndex}
-					pageSize={table.getState().pagination.pageSize}
-					onPageChange={table.setPageIndex}
-					onPageSizeChange={table.setPageSize}
-				/>
-			</CardFooter>
-			<DeleteItemModal path='/centers' onDelete={handleDeleteCenter} />
-		</Card>
+				</CardContent>
+			</Card>
+
+			<AlertDeleteDialog onDelete={() => deleteCenter()} />
+		</>
 	)
 }

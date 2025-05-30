@@ -11,7 +11,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export const BeneficiaryColumns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<Beneficiary>[] = [
 	{
 		header: 'Nome',
 		accessorKey: 'name',
