@@ -5,6 +5,7 @@ import {
 	Category,
 	Center,
 	Entry,
+	RecurringBilling,
 	Schedule,
 } from '@contecon/graphql/lib/graphql'
 
@@ -290,5 +291,53 @@ export const SCHEDULES: TypedDocumentNode<{
 			createdAt
 			updatedAt
 		}
+	}
+`
+
+/* RECURRING BILLS */
+
+export const RECURRING_BILL: TypedDocumentNode<{
+	recurringBill: RecurringBilling
+}> = gql`
+	query RecurringBill($recurringBillId: String!) {
+		recurringBill(id: $recurringBillId) {
+			id
+			name
+			description
+			dueDate
+			offsetDate
+			paymentDate
+			receiveFrom
+			status
+			totalValue
+			type
+			createdAt
+			updatedAt
+		}
+	}
+`
+
+export const RECURRING_BILLS: TypedDocumentNode<{
+	recurringBills: {
+		items: RecurringBilling[]
+		total: number
+	}
+}> = gql`
+	query RecurringBills($query: QueryPaginationInput) {
+		recurringBills(query: $query) {
+			id
+			name
+			description
+			dueDate
+			offsetDate
+			paymentDate
+			receiveFrom
+			status
+			totalValue
+			type
+			createdAt
+			updatedAt
+		}
+		total
 	}
 `

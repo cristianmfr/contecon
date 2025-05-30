@@ -8,10 +8,12 @@ import {
 import {
 	CircleDollarSign,
 	FileLineChartIcon,
+	FileSpreadsheetIcon,
 	HandCoinsIcon,
 	LayoutDashboardIcon,
 	LucideIcon,
 	PiggyBankIcon,
+	RepeatIcon,
 	TagIcon,
 	UsersIcon,
 } from 'lucide-react'
@@ -57,6 +59,16 @@ export function MainSidebarItems() {
 			url: '/accounts',
 			label: 'Contas Financeiras',
 			icon: PiggyBankIcon,
+		},
+		{
+			url: '/recurring-billings',
+			label: 'Contas Recorrentes',
+			icon: RepeatIcon,
+		},
+		{
+			url: '/invoices',
+			label: 'Notas Fiscais',
+			icon: FileSpreadsheetIcon,
 		},
 		{
 			url: '/reports',

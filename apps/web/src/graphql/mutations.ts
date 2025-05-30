@@ -148,3 +148,23 @@ export const RESET_USER_PASSWORD = gql`
 		resetPassword(token: $token, password: $password)
 	}
 `
+
+/* RECURRING BILLS */
+
+export const CREATE_RECURRING_BILL = gql`
+	mutation CreateRecurringBill($data: CreateRecurringBillInput!) {
+		createRecurringBill(data: $data)
+	}
+`
+
+export const UPDATE_RECURRING_BILL = gql`
+	mutation UpdateRecurringBill($data: UpdateRecurringBillInput!) {
+		updateRecurringBill(data: $data)
+	}
+`
+
+export const DELETE_RECURRING_BILL = gql`
+	mutation DeleteRecurringBill($deleteRecurringBillId: String!) {
+		deleteRecurringBill(id: $deleteRecurringBillId)
+	}
+`
