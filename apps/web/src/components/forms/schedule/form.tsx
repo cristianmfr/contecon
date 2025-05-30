@@ -47,7 +47,6 @@ export default function ScheduleForm({
 						name='name'
 						placeholder='Nome do agendamento'
 						register={register('name')}
-						error={errors.name?.message}
 					/>
 					<ColorPicker value={color} onChange={setColor} />
 				</div>
@@ -93,7 +92,6 @@ export default function ScheduleForm({
 				label='Descrição'
 				placeholder='Descrição do agendamento'
 				register={register('description')}
-				error={errors.description?.message}
 			/>
 		</div>
 	)

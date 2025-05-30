@@ -34,8 +34,7 @@ export const columns: ColumnDef<Category>[] = [
 	{
 		id: 'actions',
 		cell: ({ row }) => {
-			const { id } = row.original
-
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { setParams } = useCategoryParams()
 
 			return (
@@ -47,12 +46,14 @@ export const columns: ColumnDef<Category>[] = [
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem onClick={() => setParams({ categoryId: id })}>
+							<DropdownMenuItem
+								onClick={() => setParams({ categoryId: row.original.id })}
+							>
 								<Pencil className='w-4 h-4' />
 								Editar
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								onClick={() => setParams({ deleteCategoryId: id })}
+								onClick={() => setParams({ deleteCategoryId: row.original.id })}
 							>
 								<Trash className='w-4 h-4' />
 								Excluir

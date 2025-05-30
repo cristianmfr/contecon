@@ -1,4 +1,4 @@
-import { useSearchParams } from '@/src/hooks/use-search-params'
+import { useBeneficiaryParams } from '@/src/hooks/use-beneficiary-params'
 import { Beneficiary } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
 import {
@@ -9,7 +9,6 @@ import {
 } from '@contecon/ui/components/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 export const columns: ColumnDef<Beneficiary>[] = [
 	{
@@ -31,8 +30,8 @@ export const columns: ColumnDef<Beneficiary>[] = [
 	{
 		id: 'actions',
 		cell: ({ row }) => {
-			const router = useRouter()
-			const { setParam } = useSearchParams()
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { setParams } = useBeneficiaryParams()
 
 			return (
 				<DropdownMenu>
@@ -43,13 +42,15 @@ export const columns: ColumnDef<Beneficiary>[] = [
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
 						<DropdownMenuItem
-							onClick={() => router.push(`/beneficiaries/${row.original.id}`)}
+							onClick={() => setParams({ beneficiaryId: row.original.id })}
 						>
 							<Pencil />
 							Editar
 						</DropdownMenuItem>
 						<DropdownMenuItem
-							onClick={() => setParam('deleteId', row.original.id)}
+							onClick={() =>
+								setParams({ deleteBeneficiaryId: row.original.id })
+							}
 						>
 							<Trash2 />
 							Excluir

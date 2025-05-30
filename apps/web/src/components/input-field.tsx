@@ -50,6 +50,7 @@ export function InputField({
 					{...inputProps}
 				/>
 			)}
+			{error && <p className='text-sm text-red-500'>{error}</p>}
 		</div>
 	)
 }

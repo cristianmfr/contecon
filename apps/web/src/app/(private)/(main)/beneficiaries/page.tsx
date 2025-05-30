@@ -6,23 +6,13 @@ import { revalidatePath } from 'next/cache'
 
 import { getBeneficiariesAction } from './actions'
 
-type SearchParams = { [key: string]: string | undefined }
-
-export async function generateMetadata({
-	searchParams,
-}: {
-	searchParams: SearchParams
-}): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: 'Favorecidos',
 	}
 }
 
-export default async function BeneficiariesPage({
-	searchParams,
-}: {
-	searchParams: SearchParams
-}) {
+export default async function BeneficiariesPage() {
 	const { beneficiaries } = await getBeneficiariesAction()
 
 	const revalidateCache = async () => {

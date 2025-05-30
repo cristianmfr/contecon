@@ -37,23 +37,20 @@ export const EntriesTable = ({
 }) => {
 	const { setParams, deleteEntryId } = useEntryParams()
 
-	const [deleteEntry, { loading: deleteEntryLoading }] = useMutation(
-		DELETE_ENTRY,
-		{
-			variables: { deleteEntryId },
-			refetchQueries: [
-				{ query: ENTRIES, variables: { query: { skip: 0, take: 10 } } },
-			],
-			onCompleted: () => {
-				toast.success('Lançamento deletado com sucesso!')
-				revalidateEntriesPath()
-			},
-			onError: (error) => {
-				toast.error('Erro ao deletar lançamento!')
-				console.error(error)
-			},
+	const [deleteEntry] = useMutation(DELETE_ENTRY, {
+		variables: { deleteEntryId },
+		refetchQueries: [
+			{ query: ENTRIES, variables: { query: { skip: 0, take: 10 } } },
+		],
+		onCompleted: () => {
+			toast.success('Lançamento deletado com sucesso!')
+			revalidateEntriesPath()
 		},
-	)
+		onError: (error) => {
+			toast.error('Erro ao deletar lançamento!')
+			console.error(error)
+		},
+	})
 	const table = useReactTable({
 		data: entries,
 		columns,

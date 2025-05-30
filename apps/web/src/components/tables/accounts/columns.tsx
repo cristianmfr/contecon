@@ -13,6 +13,37 @@ import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
+const AccountTypeCell = ({ row }: { row: { original: Account } }) => {
+	return <Badge>{resolveAccountType(row.original.type)}</Badge>
+}
+
+const ActionsCell = ({ row }: { row: { original: Account } }) => {
+	const router = useRouter()
+	const { setParam } = useSearchParams()
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant='ghost' size='icon'>
+					<MoreVertical className='size-4' />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>
+				<DropdownMenuItem
+					onClick={() => router.push(`/accounts/${row.original.id}`)}
+				>
+					<Pencil />
+					Editar
+				</DropdownMenuItem>
+				<DropdownMenuItem onClick={() => setParam('deleteId', row.original.id)}>
+					<Trash2 />
+					Excluir
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	)
+}
+
 export const columns: ColumnDef<Account>[] = [
 	{
 		header: 'Banco',
@@ -25,9 +56,7 @@ export const columns: ColumnDef<Account>[] = [
 	{
 		header: 'Tipo de conta',
 		accessorKey: 'type',
-		cell: ({ row }) => {
-			return <Badge>{resolveAccountType(row.original.type)}</Badge>
-		},
+		cell: AccountTypeCell,
 	},
 	{
 		header: 'Número da conta',
@@ -39,33 +68,6 @@ export const columns: ColumnDef<Account>[] = [
 	},
 	{
 		id: 'actions',
-		cell: ({ row }) => {
-			const router = useRouter()
-			const { setParam } = useSearchParams()
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant='ghost' size='icon'>
-							<MoreVertical className='size-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem
-							onClick={() => router.push(`/accounts/${row.original.id}`)}
-						>
-							<Pencil />
-							Editar
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => setParam('deleteId', row.original.id)}
-						>
-							<Trash2 />
-							Excluir
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
+		cell: ActionsCell,
 	},
 ]

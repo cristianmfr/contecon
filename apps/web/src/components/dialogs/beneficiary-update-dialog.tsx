@@ -64,15 +64,12 @@ export function BeneficiaryUpdateDialog({
 
 	const handleUpdateBeneficiary = handleSubmit(
 		async (data: BeneficiaryPayload) => {
-			const { ...rest } = data
-			const payload = {
-				id: beneficiaryId!,
-				...rest,
-			}
-
 			updateBeneficiaryAction({
 				variables: {
-					data: payload,
+					data: {
+						id: beneficiaryId!,
+						...data,
+					},
 				},
 			})
 		},

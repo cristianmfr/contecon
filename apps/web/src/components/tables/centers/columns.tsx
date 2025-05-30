@@ -34,8 +34,7 @@ export const columns: ColumnDef<Center>[] = [
 	{
 		id: 'actions',
 		cell: ({ row }) => {
-			const { id } = row.original
-
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { setParams } = useCenterParams()
 
 			return (
@@ -48,13 +47,13 @@ export const columns: ColumnDef<Center>[] = [
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
 							<DropdownMenuItem
-								onClick={() => setParams({ centerId: id })}
+								onClick={() => setParams({ centerId: row.original.id })}
 							>
 								<Pencil className='w-4 h-4' />
 								Editar
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								onClick={() => setParams({ deleteCenterId: id })}
+								onClick={() => setParams({ deleteCenterId: row.original.id })}
 							>
 								<Trash className='w-4 h-4' />
 								Excluir

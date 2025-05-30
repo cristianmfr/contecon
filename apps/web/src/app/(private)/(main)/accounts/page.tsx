@@ -6,23 +6,13 @@ import { revalidatePath } from 'next/cache'
 
 import { getAccountsAction } from './actions'
 
-type SearchParams = { [key: string]: string | undefined }
-
-export async function generateMetadata({
-	searchParams,
-}: {
-	searchParams: SearchParams
-}): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: 'Contas financeiras',
 	}
 }
 
-export default async function AccountsPage({
-	searchParams,
-}: {
-	searchParams: SearchParams
-}) {
+export default async function AccountsPage() {
 	const { accounts } = await getAccountsAction()
 
 	const revalidateCache = async () => {

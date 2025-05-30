@@ -61,14 +61,12 @@ export function EntryUpdateDialog({
 	)
 
 	const handleUpdateEntry = handleSubmit(async (data: EntryPayload) => {
-		const { ...rest } = data
-		const payload = {
-			id: entryId!,
-		}
-
 		updateEntryAction({
 			variables: {
-				data: payload,
+				data: {
+					id: entryId!,
+					...data,
+				},
 			},
 		})
 	})

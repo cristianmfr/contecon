@@ -30,10 +30,9 @@ export function RecurringBillingCreateDialog({
 
 	const isOpen = Boolean(createRecurringBilling)
 
-	const { register, handleSubmit, control, setValue } =
-		useForm<RecurringBillingPayload>({
-			resolver: zodResolver(recurringBillingSchema),
-		})
+	const { register, handleSubmit, control } = useForm<RecurringBillingPayload>({
+		resolver: zodResolver(recurringBillingSchema),
+	})
 
 	const [createRecurringBillingAction, { loading: mutationLoading }] =
 		useMutation(CREATE_RECURRING_BILL, {
@@ -61,13 +60,9 @@ export function RecurringBillingCreateDialog({
 
 	const handleCreateRecurringBilling = handleSubmit(
 		async (data: RecurringBillingPayload) => {
-			const { ...rest } = data
-
 			createRecurringBillingAction({
 				variables: {
-					data: {
-						...rest,
-					},
+					data,
 				},
 			})
 		},

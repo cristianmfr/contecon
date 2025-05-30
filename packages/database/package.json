@@ -1,26 +1,29 @@
 {
-  "name": "@contecon/database",
-  "version": "0.0.0",
-  "scripts": {
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev --skip-generate",
-    "deploy": "prisma migrate deploy",
-    "studio": "prisma studio",
-    "reset": "prisma migrate reset"
-  },
-  "devDependencies": {
-    "@contecon/prettier": "workspace:*",
-    "@types/node": "^22.15.21",
-    "prisma": "^6.8.2",
-    "tsup": "^8.5.0"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.8.2",
-    "@prisma/extension-accelerate": "^1.1.0",
-    "prettier": "^3.5.3"
-  },
-  "exports": {
-    "./client": "./src/client.ts",
-    "./generated/prisma": "./generated/prisma/index.js"
-  }
+	"name": "@contecon/database",
+	"version": "0.0.0",
+	"scripts": {
+		"generate": "prisma generate",
+		"migrate": "prisma migrate dev --skip-generate",
+		"deploy": "prisma migrate deploy",
+		"studio": "prisma studio",
+		"reset": "prisma migrate reset",
+		"build": "tsup",
+		"prebuild": "pnpm generate",
+		"predev": "pnpm generate"
+	},
+	"devDependencies": {
+		"@contecon/prettier": "workspace:*",
+		"@types/node": "^22.15.21",
+		"prisma": "^6.8.2",
+		"tsup": "^8.5.0"
+	},
+	"dependencies": {
+		"@prisma/client": "^6.8.2",
+		"@prisma/extension-accelerate": "^1.1.0",
+		"prettier": "^3.5.3"
+	},
+	"exports": {
+		"./client": "./src/client.ts",
+		"./generated/prisma": "./generated/prisma/index.js"
+	}
 }

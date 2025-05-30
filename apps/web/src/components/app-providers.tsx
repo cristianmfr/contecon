@@ -2,7 +2,6 @@
 
 import { ApolloProvider } from '@apollo/client'
 import { Toaster } from '@contecon/ui/components/toaster'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Suspense } from 'react'
 
 import { apolloClient } from '../lib/apollo-client'

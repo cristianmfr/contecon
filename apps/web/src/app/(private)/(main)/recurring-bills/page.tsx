@@ -4,23 +4,13 @@ import { revalidatePath } from 'next/cache'
 
 import { getRecurringBillingsAction } from './actions'
 
-type SearchParams = { [key: string]: string | undefined }
-
-export async function generateMetadata({
-	searchParams,
-}: {
-	searchParams: SearchParams
-}): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: 'Contas recorrentes',
 	}
 }
 
-export default async function RecurringBillsPage({
-	searchParams,
-}: {
-	searchParams: SearchParams
-}) {
+export default async function RecurringBillsPage() {
 	const { recurringBills } = await getRecurringBillingsAction()
 
 	const revalidateRecurringBillingPath = async () => {

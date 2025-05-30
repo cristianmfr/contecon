@@ -1,4 +1,4 @@
-import { useSearchParams } from '@/src/hooks/use-search-params'
+import { useEntryParams } from '@/src/hooks/use-entry-params'
 import { formatCurrency } from '@/src/utils/format-currency'
 import { Entry } from '@contecon/graphql/lib/graphql'
 import { Badge } from '@contecon/ui/components/badge'
@@ -17,9 +17,6 @@ import {
 	ArrowDownLeft,
 	ArrowLeftRight,
 	ArrowUpRight,
-	Eye,
-	FilePlus,
-	FilePlusIcon,
 	MoreVertical,
 	Pencil,
 	Printer,
@@ -166,7 +163,8 @@ export const columns: ColumnDef<Entry>[] = [
 	{
 		id: 'actions',
 		cell: ({ row }) => {
-			const { setParam } = useSearchParams()
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { setParams } = useEntryParams()
 
 			return (
 				<DropdownMenu>
@@ -185,7 +183,7 @@ export const columns: ColumnDef<Entry>[] = [
 							Editar
 						</DropdownMenuItem>
 						<DropdownMenuItem
-							onClick={() => setParam('deleteId', row.original.id)}
+							onClick={() => setParams({ deleteEntryId: row.original.id })}
 						>
 							<Trash2 />
 							Deletar

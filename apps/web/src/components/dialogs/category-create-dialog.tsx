@@ -1,9 +1,8 @@
 'use client'
 
-import { CREATE_CATEGORY, CREATE_CENTER } from '@/src/graphql/mutations'
-import { CATEGORIES, CENTERS } from '@/src/graphql/queries'
+import { CREATE_CATEGORY } from '@/src/graphql/mutations'
+import { CATEGORIES } from '@/src/graphql/queries'
 import { useCategoryParams } from '@/src/hooks/use-category-params'
-import { useCenterParams } from '@/src/hooks/use-centers-params'
 import { useMutation } from '@apollo/client'
 import { Button } from '@contecon/ui/components/button'
 import {
@@ -17,8 +16,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { categorySchema } from '../forms/categories/form'
-import { CategoryPayload } from '../forms/categories/form'
-import { CenterForm, CenterPayload, centerSchema } from '../forms/centers/form'
+import { CategoryForm, CategoryPayload } from '../forms/categories/form'
 
 export function CategoryCreateDialog({
 	onRevalidateCache,
@@ -60,13 +58,11 @@ export function CategoryCreateDialog({
 	)
 
 	const handleCreateCategory = handleSubmit(async (data: CategoryPayload) => {
-		const { isActive, ...rest } = data
-
 		createCategoryAction({
 			variables: {
 				data: {
-					...rest,
-					isActive: isActive === 'true' ? true : false,
+					...data,
+					isActive: data.isActive === 'true' ? true : false,
 				},
 			},
 		})
@@ -76,9 +72,9 @@ export function CategoryCreateDialog({
 		<Dialog open={isOpen} onOpenChange={() => setParams(null)}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Novo Centro de Custos</DialogTitle>
+					<DialogTitle>Nova Categoria</DialogTitle>
 				</DialogHeader>
-				<CenterForm register={register} control={control} />
+				<CategoryForm register={register} control={control} />
 				<div className='grid grid-cols-2 gap-2'>
 					<Button
 						variant='secondary'

@@ -6,13 +6,7 @@ import { SelectItem, SelectValue } from '@contecon/ui/components/select'
 import { SelectGroup } from '@contecon/ui/components/select'
 import { SelectContent } from '@contecon/ui/components/select'
 import { useState } from 'react'
-import {
-	Control,
-	Controller,
-	UseFormRegister,
-	UseFormSetValue,
-	UseFormWatch,
-} from 'react-hook-form'
+import { Control, Controller, UseFormRegister } from 'react-hook-form'
 import { withMask } from 'use-mask-input'
 import { z } from 'zod'
 

@@ -30,7 +30,6 @@ import { cn } from '@contecon/ui/lib/utils'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
-import { useState } from 'react'
 import { Control, Controller, UseFormRegister } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -65,8 +64,6 @@ export function EntryForm({
 	const { data: costCenters } = useQuery(CENTERS)
 	const { data: categories } = useQuery(CATEGORIES)
 	const { data: accounts } = useQuery(ACCOUNTS)
-	const [entryType, setEntryType] = useState<EntryType>()
-	const [entryStatus, setEntryStatus] = useState<EntryStatus>()
 
 	return (
 		<div className='grid grid-cols-3 gap-4 w-full'>
@@ -74,7 +71,6 @@ export function EntryForm({
 				<SelectField
 					label='Tipo do Lançamento'
 					name='type'
-					onChangeCustom={(value) => setEntryType(value as EntryType)}
 					control={control}
 					options={Object.values(EntryType).map((type) => ({
 						label: resolveEntryTypeLabel(type),
@@ -230,7 +226,6 @@ export function EntryForm({
 									<PopoverTrigger asChild>
 										<Button
 											variant={'outline'}
-											disabled={entryStatus === EntryStatus.Pending}
 											className={cn(
 												'justify-start text-left font-normal',
 												!value && 'text-muted-foreground',

@@ -19,11 +19,7 @@ export function LoginForm() {
 
 	type LoginFormValues = z.infer<typeof loginSchema>
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<LoginFormValues>({
+	const { register, handleSubmit } = useForm<LoginFormValues>({
 		resolver: zodResolver(loginSchema),
 	})
 
@@ -48,7 +44,6 @@ export function LoginForm() {
 				label='E-mail'
 				placeholder='seu@email.com'
 				register={register('email')}
-				error={errors.email?.message}
 			/>
 			<InputField
 				name='password'
@@ -56,7 +51,6 @@ export function LoginForm() {
 				label='Senha'
 				placeholder='***********'
 				register={register('password')}
-				error={errors.password?.message}
 			/>
 			<Button loading={isLoading} disabled={isLoading}>
 				Entrar

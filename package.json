@@ -13,7 +13,9 @@
     "prisma:deploy": "pnpm --filter @contecon/database deploy",
     "prisma:studio": "pnpm --filter @contecon/database studio",
     "prisma:reset": "pnpm --filter @contecon/database reset",
+    "db:predeploy": "pnpm --filter @contecon/database generate && pnpm --filter @contecon/database migrate dev",
     "graphql:generate": "pnpm --filter @contecon/graphql generate",
+    "api:prod": "pnpm --filter @contecon/api prod",
     "start:api": "pnpm --filter @contecon/api start"
   },
   "devDependencies": {

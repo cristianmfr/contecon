@@ -37,21 +37,20 @@ export const BeneficiariesTable = ({
 }) => {
 	const { setParams, deleteBeneficiaryId } = useBeneficiaryParams()
 
-	const [deleteBeneficiary, { loading: deleteBeneficiaryLoading }] =
-		useMutation(DELETE_BENEFICIARY, {
-			variables: { deleteBeneficiaryId },
-			refetchQueries: [
-				{ query: BENEFICIARIES, variables: { query: { skip: 0, take: 10 } } },
-			],
-			onCompleted: () => {
-				toast.success('Favorecido deletado com sucesso!')
-				revalidateBeneficiariesPath()
-			},
-			onError: (error) => {
-				toast.error('Erro ao deletar favorecido!')
-				console.error(error)
-			},
-		})
+	const [deleteBeneficiary] = useMutation(DELETE_BENEFICIARY, {
+		variables: { deleteBeneficiaryId },
+		refetchQueries: [
+			{ query: BENEFICIARIES, variables: { query: { skip: 0, take: 10 } } },
+		],
+		onCompleted: () => {
+			toast.success('Favorecido deletado com sucesso!')
+			revalidateBeneficiariesPath()
+		},
+		onError: (error) => {
+			toast.error('Erro ao deletar favorecido!')
+			console.error(error)
+		},
+	})
 
 	const table = useReactTable({
 		data: beneficiaries,

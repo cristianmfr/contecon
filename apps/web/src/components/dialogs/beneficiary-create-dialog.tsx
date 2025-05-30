@@ -60,13 +60,9 @@ export function BeneficiaryCreateDialog({
 
 	const handleCreateBeneficiary = handleSubmit(
 		async (data: BeneficiaryPayload) => {
-			const { ...rest } = data
-
 			createBeneficiaryAction({
 				variables: {
-					data: {
-						...rest,
-					},
+					data,
 				},
 			})
 		},

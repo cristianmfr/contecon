@@ -5,7 +5,7 @@ import { DELETE_ACCOUNT } from '@/src/graphql/mutations'
 import { ACCOUNTS } from '@/src/graphql/queries'
 import { useAccountParams } from '@/src/hooks/use-account-params'
 import { useMutation } from '@apollo/client'
-import { Account, Beneficiary } from '@contecon/graphql/lib/graphql'
+import { Account } from '@contecon/graphql/lib/graphql'
 import { Button } from '@contecon/ui/components/button'
 import { Card, CardContent, CardHeader } from '@contecon/ui/components/card'
 import {
@@ -37,23 +37,20 @@ export const AccountsTable = ({
 }) => {
 	const { setParams, deleteAccountId } = useAccountParams()
 
-	const [deleteAccount, { loading: deleteAccountLoading }] = useMutation(
-		DELETE_ACCOUNT,
-		{
-			variables: { deleteAccountId },
-			refetchQueries: [
-				{ query: ACCOUNTS, variables: { query: { skip: 0, take: 10 } } },
-			],
-			onCompleted: () => {
-				toast.success('Conta financeira deletada com sucesso!')
-				revalidateAccountsPath()
-			},
-			onError: (error) => {
-				toast.error('Erro ao deletar conta financeira!')
-				console.error(error)
-			},
+	const [deleteAccount] = useMutation(DELETE_ACCOUNT, {
+		variables: { deleteAccountId },
+		refetchQueries: [
+			{ query: ACCOUNTS, variables: { query: { skip: 0, take: 10 } } },
+		],
+		onCompleted: () => {
+			toast.success('Conta financeira deletada com sucesso!')
+			revalidateAccountsPath()
 		},
-	)
+		onError: (error) => {
+			toast.error('Erro ao deletar conta financeira!')
+			console.error(error)
+		},
+	})
 
 	const table = useReactTable({
 		data: accounts,

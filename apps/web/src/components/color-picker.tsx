@@ -8,7 +8,6 @@ import {
 	PopoverTrigger,
 } from '@contecon/ui/components/popover'
 import { cn } from '@contecon/ui/lib/utils'
-import { Circle } from 'lucide-react'
 import { useMemo } from 'react'
 import { HexColorPicker } from 'react-colorful'
 

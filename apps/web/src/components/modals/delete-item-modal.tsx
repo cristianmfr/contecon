@@ -7,10 +7,7 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-	AlertDialogTrigger,
 } from '@contecon/ui/components/alert-dialog'
-import { Button } from '@contecon/ui/components/button'
-import { Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 export function DeleteItemModal({

@@ -37,23 +37,20 @@ export const CategoriesTable = ({
 }) => {
 	const { setParams, deleteCategoryId } = useCategoryParams()
 
-	const [deleteCategory, { loading: deleteCategoryLoading }] = useMutation(
-		DELETE_CATEGORY,
-		{
-			variables: { deleteCategoryId },
-			refetchQueries: [
-				{ query: CATEGORIES, variables: { query: { skip: 0, take: 10 } } },
-			],
-			onCompleted: () => {
-				toast.success('Categoria deletada com sucesso!')
-				revalidateCategoriesPath()
-			},
-			onError: (error) => {
-				toast.error('Erro ao deletar categoria!')
-				console.error(error)
-			},
+	const [deleteCategory] = useMutation(DELETE_CATEGORY, {
+		variables: { deleteCategoryId },
+		refetchQueries: [
+			{ query: CATEGORIES, variables: { query: { skip: 0, take: 10 } } },
+		],
+		onCompleted: () => {
+			toast.success('Categoria deletada com sucesso!')
+			revalidateCategoriesPath()
 		},
-	)
+		onError: (error) => {
+			toast.error('Erro ao deletar categoria!')
+			console.error(error)
+		},
+	})
 	const table = useReactTable({
 		data: categories,
 		columns,

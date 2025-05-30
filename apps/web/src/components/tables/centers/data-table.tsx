@@ -37,23 +37,20 @@ export const CentersTable = ({
 }) => {
 	const { setParams, deleteCenterId } = useCenterParams()
 
-	const [deleteCenter, { loading: deleteCenterLoading }] = useMutation(
-		DELETE_CENTER,
-		{
-			variables: { deleteCenterId },
-			refetchQueries: [
-				{ query: CENTERS, variables: { query: { skip: 0, take: 10 } } },
-			],
-			onCompleted: () => {
-				toast.success('Centro de custos deletado com sucesso!')
-				revalidateCentersPath()
-			},
-			onError: (error) => {
-				toast.error('Erro ao deletar centro de custos!')
-				console.error(error)
-			},
+	const [deleteCenter] = useMutation(DELETE_CENTER, {
+		variables: { deleteCenterId },
+		refetchQueries: [
+			{ query: CENTERS, variables: { query: { skip: 0, take: 10 } } },
+		],
+		onCompleted: () => {
+			toast.success('Centro de custos deletado com sucesso!')
+			revalidateCentersPath()
 		},
-	)
+		onError: (error) => {
+			toast.error('Erro ao deletar centro de custos!')
+			console.error(error)
+		},
+	})
 	const table = useReactTable({
 		data: centers,
 		columns,

@@ -33,7 +33,7 @@ export function DateTimePicker<T extends FieldValues>({
 
 	function handleTimeChange(type: 'hour' | 'minute', value: string) {
 		const currentDate = new Date()
-		let newDate = new Date(currentDate)
+		const newDate = new Date(currentDate)
 
 		if (type === 'hour') {
 			const hour = parseInt(value, 10)
@@ -49,7 +49,7 @@ export function DateTimePicker<T extends FieldValues>({
 		<Controller
 			name={name}
 			control={control}
-			render={({ field: { value, onChange } }) => {
+			render={({ field: { value } }) => {
 				return (
 					<Popover modal>
 						<PopoverTrigger asChild>

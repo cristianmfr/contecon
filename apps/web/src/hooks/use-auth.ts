@@ -58,7 +58,7 @@ export const useAuth = (): AuthContextType => {
 				)
 			}
 		},
-		[signInMutation],
+		[signInMutation, router],
 	)
 
 	const logout = useCallback(() => {

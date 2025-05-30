@@ -37,24 +37,23 @@ export const RecurringBillingTable = ({
 }) => {
 	const { setParams, deleteRecurringBillingId } = useRecurringBillingParams()
 
-	const [deleteRecurringBilling, { loading: deleteRecurringBillingLoading }] =
-		useMutation(DELETE_RECURRING_BILL, {
-			variables: { deleteRecurringBillingId },
-			refetchQueries: [
-				{
-					query: RECURRING_BILLS,
-					variables: { query: { skip: 0, take: 10 } },
-				},
-			],
-			onCompleted: () => {
-				toast.success('Conta recorrente deletada com sucesso!')
-				revalidateRecurringBillingPath()
+	const [deleteRecurringBilling] = useMutation(DELETE_RECURRING_BILL, {
+		variables: { deleteRecurringBillingId },
+		refetchQueries: [
+			{
+				query: RECURRING_BILLS,
+				variables: { query: { skip: 0, take: 10 } },
 			},
-			onError: (error) => {
-				toast.error('Erro ao deletar conta recorrente!')
-				console.error(error)
-			},
-		})
+		],
+		onCompleted: () => {
+			toast.success('Conta recorrente deletada com sucesso!')
+			revalidateRecurringBillingPath()
+		},
+		onError: (error) => {
+			toast.error('Erro ao deletar conta recorrente!')
+			console.error(error)
+		},
+	})
 	const table = useReactTable({
 		data: recurringBilling,
 		columns,

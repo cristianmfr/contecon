@@ -1,7 +1,6 @@
 import { useSearchParams } from '@/src/hooks/use-search-params'
 import { formatCurrency } from '@/src/utils/format-currency'
 import { RecurringBilling } from '@contecon/graphql/lib/graphql'
-import { Badge } from '@contecon/ui/components/badge'
 import { Button } from '@contecon/ui/components/button'
 import { Checkbox } from '@contecon/ui/components/checkbox'
 import {
@@ -10,21 +9,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@contecon/ui/components/dropdown-menu'
-import { cn } from '@contecon/ui/lib/utils'
 import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import {
-	ArrowDownLeft,
-	ArrowLeftRight,
-	ArrowUpRight,
-	Eye,
-	FilePlus,
-	FilePlusIcon,
-	MoreVertical,
-	Pencil,
-	Printer,
-	Trash2,
-} from 'lucide-react'
+import { MoreVertical, Pencil, Printer, Trash2 } from 'lucide-react'
 
 export const columns: ColumnDef<RecurringBilling>[] = [
 	{
@@ -63,6 +49,7 @@ export const columns: ColumnDef<RecurringBilling>[] = [
 	{
 		id: 'actions',
 		cell: ({ row }) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { setParam } = useSearchParams()
 
 			return (
