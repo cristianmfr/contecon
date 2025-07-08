@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  admin
+
+  @@map("roles")
+}
+
+enum DocumentType {
+  cpf
+  cnpj
+  rg
+
+  @@map("document_types")
+}
+
+model Address {
+  id String @id @default(uuid())
+
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  country      String
+
+  userId String @unique
+  user   User   @relation("user_addresses", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("addresses")
+}
+
+model TaxData {
+  id String @id @default(uuid())
+
+  tradeName    String
+  companyName  String
+  email        String        @unique
+  phone        String?
+  document     String?
+  documentType DocumentType?
+
+  userId String @unique
+  user   User   @relation("user_tax_data", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tax_data")
+}
+
+model User {
+  id String @id @default(uuid())
+
+  name       String
+  email      String   @unique
+  password   String
+  role       UserRole @default(user)
+  resetToken String?  @unique @map("reset_token")
+  isActive   Boolean  @default(true) @map("is_active")
+
+  categories        Category[]         @relation("user_categories")
+  centers           Center[]           @relation("user_centers")
+  beneficiaries     Beneficiary[]      @relation("user_beneficiaries")
+  accounts          Account[]          @relation("user_accounts")
+  entries           Entry[]            @relation("user_entries")
+  recurringBillings RecurringBilling[] @relation("user_recurring_billings")
+  schedules         Schedule[]         @relation("user_schedules")
+  invoices          Invoice[]          @relation("user_invoices")
+  address           Address?           @relation("user_addresses")
+  taxData           TaxData?           @relation("user_tax_data")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Category {
+  id String @id @default(uuid())
+
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  userId String
+  user   User   @relation("user_categories", fields: [userId], references: [id])
+
+  entries           Entry[]            @relation("category_entries")
+  recurringBillings RecurringBilling[] @relation("category_recurring_billings")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Center {
+  id String @id @default(uuid())
+
+  name        String
+  description String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  userId String
+  user   User   @relation("user_centers", fields: [userId], references: [id])
+
+  entries           Entry[]            @relation("center_entries")
+  recurringBillings RecurringBilling[] @relation("center_recurring_billings")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("centers")
+}
+
+enum BeneficiaryType {
+  client
+  supplier
+
+  @@map("beneficiary_types")
+}
+
+model Beneficiary {
+  id String @id @default(uuid())
+
+  name         String
+  email        String           @unique
+  phone        String?
+  document     String?
+  documentType DocumentType?
+  birthdate    DateTime?        @map("birthdate")
+  type         BeneficiaryType?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String
+  user   User   @relation("user_beneficiaries", fields: [userId], references: [id])
+
+  entries Entry[] @relation("beneficiary_entries")
+
+  @@map("beneficiaries")
+}
+
+enum AccountType {
+  checking
+  savings
+  investment
+  credit_card
+  other
+
+  @@map("account_types")
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
+
+  @@map("invoice_status")
+}
+
+model Account {
+  id String @id @default(uuid())
+
+  name        String
+  bank        String?
+  description String?
+  number      String?
+  agency      String?
+  type        AccountType @default(checking)
+  balance     Float       @default(0)
+  credit      Float       @default(0)
+
+  userId String
+  user   User   @relation("user_accounts", fields: [userId], references: [id])
+
+  entries Entry[] @relation("account_entries")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+enum EntryType {
+  receipt
+  payment
+  transfer
+
+  @@map("entry_type")
+}
+
+enum EntryStatus {
+  pending
+  received
+  overdue
+  cancelled
+  partially_received
+
+  @@map("entry_status")
+}
+
+model Entry {
+  id String @id @default(uuid())
+
+  receiveFrom String      @map("receive_from")
+  type        EntryType
+  description String?
+  totalValue  Float       @default(0) @map("total_value")
+  dueDate     DateTime?   @map("due_date")
+  paymentDate DateTime?   @map("payment_date")
+  offsetDate  DateTime?   @map("offset_date")
+  status      EntryStatus @default(pending)
+
+  categoryId String?
+  category   Category? @relation("category_entries", fields: [categoryId], references: [id])
+
+  centerId String?
+  center   Center? @relation("center_entries", fields: [centerId], references: [id])
+
+  beneficiaryId String?
+  beneficiary   Beneficiary? @relation("beneficiary_entries", fields: [beneficiaryId], references: [id])
+
+  accountId String?
+  account   Account? @relation("account_entries", fields: [accountId], references: [id])
+
+  userId String
+  user   User   @relation("user_entries", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("entries")
+}
+
+model RecurringBilling {
+  id String @id @default(uuid())
+
+  name        String
+  description String?
+  amount      Float    @default(0)
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  categoryId String?
+  category   Category? @relation("category_recurring_billings", fields: [categoryId], references: [id])
+
+  centerId String?
+  center   Center? @relation("center_recurring_billings", fields: [centerId], references: [id])
+
+  userId String
+  user   User   @relation("user_recurring_billings", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("recurring_billings")
+}
+
+enum ScheduleType {
+  recurring
+  one_time
+
+  @@map("schedule_type")
+}
+
+model Schedule {
+  id String @id @default(uuid())
+
+  name               String
+  description        String?
+  identifierColor    String?      @map("identifier_color")
+  type               ScheduleType @default(one_time)
+  startDate          DateTime?    @map("start_date")
+  endDate            DateTime?    @map("end_date")
+  reminder           Boolean      @default(false) @map("reminder")
+  reminderDaysBefore Int?         @default(0) @map("reminder_days_before")
+  isActive           Boolean      @default(true) @map("is_active")
+
+  userId String
+  user   User   @relation("user_schedules", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("schedules")
+}
+
+model Invoice {
+  id String @id @default(uuid())
+
+  name        String
+  description String?
+  amount      Float         @default(0)
+  dueDate     DateTime      @map("due_date")
+  status      InvoiceStatus @default(draft)
+
+  userId String
+  user   User   @relation("user_invoices", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("invoices")
+}

@@ -1,0 +1,34 @@
+{
+  "name": "contecon",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+    "web:dev": "pnpm --filter @contecon/web dev",
+    "web:build": "pnpm --filter @contecon/web build",
+    "web:prod": "pnpm --filter @contecon/web prod",
+    "api:dev": "pnpm --filter @contecon/api dev",
+    "api:build": "pnpm --filter @contecon/api build",
+    "api:prod": "pnpm --filter @contecon/api prod",
+    "docker:up": "docker compose -f packages/database/docker-compose.yml up -d",
+    "database:generate": "pnpm --filter @contecon/database generate",
+    "database:migrate": "cd packages/database && pnpm with-env pnpm migrate",
+    "database:deploy": "cd packages/database && pnpm with-env pnpm deploy",
+    "database:studio": "cd packages/database && pnpm with-env pnpm studio",
+    "database:reset": "cd packages/database && pnpm with-env pnpm reset",
+    "database:predeploy": "pnpm --filter @contecon/database generate && pnpm --filter @contecon/database migrate dev",
+    "graphql:generate": "pnpm --filter @contecon/graphql generate"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.3",
+    "typescript": "5.8.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}

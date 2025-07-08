@@ -1,0 +1,13 @@
+{
+  "name": "@contecon/prettier",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs",
+    "./nextPrettier": "./next.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
+}

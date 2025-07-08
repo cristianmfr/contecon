@@ -1,0 +1,31 @@
+{
+	"name": "@contecon/database",
+	"version": "0.0.0",
+	"scripts": {
+		"generate": "pnpm with-env prisma generate",
+		"migrate": "pnpm with-env prisma migrate dev --skip-generate",
+		"deploy": "pnpm with-env prisma migrate deploy",
+		"studio": "pnpm with-env prisma studio",
+		"reset": "pnpm with-env prisma migrate reset",
+		"build": "tsup",
+		"prebuild": "pnpm generate",
+		"predev": "pnpm generate",
+		"with-env": "dotenv -e ../../.env --"
+	},
+	"devDependencies": {
+		"@contecon/prettier": "workspace:*",
+		"@types/node": "^22.15.21",
+		"prisma": "^6.8.2",
+		"tsup": "^8.5.0"
+	},
+	"dependencies": {
+		"@prisma/client": "^6.8.2",
+		"@prisma/extension-accelerate": "^1.1.0",
+		"dotenv-cli": "^8.0.0",
+		"prettier": "^3.5.3"
+	},
+	"exports": {
+		"./client": "./src/client.ts",
+		"./generated/prisma": "./generated/prisma/index.js"
+	}
+}
